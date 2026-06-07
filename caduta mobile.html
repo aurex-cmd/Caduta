@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#c8293a">
+<title>Caduta – Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f7;
+  --surface: #ffffff;
+  --surface2: #f5f7fb;
+  --border: #e2e6f0;
+  --text: #1a1f36;
+  --muted: #6272a0;
+  --dim: #a0aac8;
+  --ar: #c02030;
+  --ao: #d06018;
+  --ay: #9a7000;
+  --ag: #157050;
+  --ab: #1e60c0;
+  --ap: #5030c0;
+  --ok: #157050;
+  --tok: 48px;
+  --tnav: 64px;
+  --rad: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--tok);
+  background: var(--ar);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px;
+  z-index: 200;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.topbar-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px; font-weight: 800; letter-spacing: .8px;
+  text-transform: uppercase; color: white;
+}
+.topbar-sub { font-size: 10px; color: rgba(255,255,255,0.75); letter-spacing: 1px; }
+.topbar-badge {
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px; padding: 4px 10px;
+  font-size: 11px; color: white; font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── BOTTOM NAV ── */
+.botnav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: var(--tnav);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 200;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.navbtn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+  cursor: pointer; border: none; background: none;
+  color: var(--dim); font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 10px; font-weight: 600; letter-spacing: .3px;
+  transition: color .15s;
+  -webkit-tap-highlight-color: transparent;
+  padding: 6px 0;
+}
+.navbtn .icon { font-size: 20px; line-height: 1; }
+.navbtn.active { color: var(--ar); }
+.navbtn.active .icon { transform: scale(1.08); }
+
+/* ── SCREENS ── */
+.screens {
+  position: fixed;
+  top: var(--tok); bottom: var(--tnav);
+  left: 0; right: 0;
+  overflow: hidden;
+}
+.screen {
+  display: none;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 14px 12px 20px;
+}
+.screen.active { display: block; }
+
+/* ── SECTION CARDS ── */
+.scard {
+  background: var(--surface);
+  border-radius: var(--rad);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(30,40,80,0.06);
+}
+.scard-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.snum {
+  width: 26px; height: 26px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800; font-size: 14px; flex-shrink: 0;
+}
+.stitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.sbody { padding: 14px; }
+
+/* SECTION COLORS */
+.c1 .snum { background:#fdecea;color:var(--ar) } .c1 .stitle { color:var(--ar) }
+.c2 .snum { background:#fdf0e6;color:var(--ao) } .c2 .stitle { color:var(--ao) }
+.c3 .snum { background:#e6f4ee;color:var(--ag) } .c3 .stitle { color:var(--ag) }
+.c4 .snum { background:#e6f0fc;color:var(--ab) } .c4 .stitle { color:var(--ab) }
+.c5 .snum { background:#eeebfc;color:var(--ap) } .c5 .stitle { color:var(--ap) }
+.c6 .snum { background:#fef8e2;color:var(--ay) } .c6 .stitle { color:var(--ay) }
+.c7 .snum { background:#fdecea;color:var(--ar) } .c7 .stitle { color:var(--ar) }
+.c8 .snum { background:#e6f4ee;color:var(--ag) } .c8 .stitle { color:var(--ag) }
+.c9 .snum { background:#e6f0fc;color:var(--ab) } .c9 .stitle { color:var(--ab) }
+.c10 .snum { background:#fdf0e6;color:var(--ao) } .c10 .stitle { color:var(--ao) }
+
+/* ── FIELD GROUPS ── */
+.fg { margin-bottom: 14px; }
+.fg:last-child { margin-bottom: 0; }
+.fl { font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+
+/* ── CHIPS (checkbox / radio) ── */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 13px;
+  background: var(--bg); border: 1.5px solid transparent;
+  border-radius: 24px; font-size: 13px; color: var(--muted);
+  cursor: pointer; user-select: none;
+  transition: all .14s;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 40px;
+}
+.chip:active { transform: scale(.96); }
+.chip .ck { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid #c0c8e0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all .14s; }
+.chip.on { border-color: var(--ok); color: var(--ok); background: #eaf4ef; }
+.chip.on .ck { background: var(--ok); border-color: var(--ok); }
+.chip.on .ck::after { content: ''; width: 8px; height: 4px; border-left: 2px solid white; border-bottom: 2px solid white; transform: rotate(-45deg) translateY(-1px); display: block; }
+.chip .rd { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #c0c8e0; flex-shrink: 0; transition: all .14s; display: flex; align-items: center; justify-content: center; }
+.chip.ron { border-color: var(--ab); color: var(--ab); background: #edf2fc; }
+.chip.ron .rd { border-color: var(--ab); background: var(--ab); }
+.chip.ron .rd::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: white; display: block; }
+
+/* Stack chips vertical */
+.chips.col { flex-direction: column; gap: 6px; }
+.chips.col .chip { border-radius: 10px; }
+
+/* ── TEXT INPUTS ── */
+.ti {
+  width: 100%; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 11px 13px; font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px; color: var(--text); margin-top: 8px;
+  -webkit-appearance: none;
+}
+.ti:focus { outline: none; border-color: var(--ab); background: white; box-shadow: 0 0 0 3px rgba(30,96,192,.1); }
+.ti::placeholder { color: var(--dim); }
+textarea.ti { resize: none; min-height: 80px; }
+
+/* ── VITALS GRID ── */
+.vg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 380px) { .vg { grid-template-columns: repeat(3, 1fr); } }
+.vb { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 8px; text-align: center; }
+.vb label { display: block; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.vb input { background: transparent; border: none; border-bottom: 2px solid #c0c8e0; color: var(--ag); font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 500; width: 100%; text-align: center; padding: 2px 0; -webkit-appearance: none; }
+.vb input:focus { outline: none; border-bottom-color: var(--ag); }
+.vb .un { font-size: 9px; color: var(--dim); margin-top: 3px; }
+
+/* ── TRAUMA TABLE (mobile) ── */
+.tblock { background: var(--surface2); border-radius: 10px; padding: 11px; margin-bottom: 8px; border: 1px solid var(--border); }
+.tblock-name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 8px; letter-spacing: .3px; }
+.tblock-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+
+/* ── SUBSECTION ── */
+.ss { background: var(--surface2); border-radius: 10px; padding: 12px; border: 1px solid var(--border); margin-bottom: 10px; }
+.ss:last-child { margin-bottom: 0; }
+.sst { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 9px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.sep { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+/* ── META FIELDS ── */
+.meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+.mf label { display: block; font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.mf input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text); -webkit-appearance: none; }
+.mf input:focus { outline: none; border-color: var(--ab); }
+
+/* ── NARRATIVE SCREEN ── */
+.narr-wrap { padding: 14px 12px; display: flex; flex-direction: column; height: 100%; }
+.narr-box {
+  flex: 1; background: white; border-radius: var(--rad);
+  border: 1px solid var(--border);
+  padding: 16px; font-size: 13.5px; line-height: 1.8;
+  color: var(--text); overflow-y: auto; white-space: pre-wrap;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 1px 6px rgba(30,40,80,0.06);
+  margin-bottom: 12px;
+}
+.narr-ph { color: var(--dim); font-style: italic; font-size: 13px; }
+.btn-copy {
+  width: 100%; padding: 16px;
+  background: var(--ab); color: white;
+  border: none; border-radius: var(--rad);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  letter-spacing: .3px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: filter .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-copy:active { filter: brightness(.9); }
+.btn-share {
+  width: 100%; padding: 14px;
+  background: var(--surface); color: var(--ab);
+  border: 1.5px solid var(--ab); border-radius: var(--rad);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  margin-top: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-share:active { background: #edf2fc; }
+
+/* ── CHECK FINALE ── */
+.cfq { background: white; border-radius: var(--rad); border: 1px solid var(--border); margin-bottom: 8px; padding: 13px; border-left: 4px solid transparent; box-shadow: 0 1px 4px rgba(30,40,80,0.05); }
+.cfq.ok { border-left-color: var(--ok); background: #f5fbf8; }
+.cfq h4 { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; gap: 7px; }
+.cfq p { font-size: 12px; color: var(--muted); margin-bottom: 9px; line-height: 1.4; }
+.qn { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+
+/* ── RED FLAGS ── */
+.rf-card { background: #fdecea; border: 1.5px solid #f0b8bc; border-radius: var(--rad); padding: 14px; margin-bottom: 12px; }
+.rf-card h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 800; color: var(--ar); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.rfi { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f0b8bc; font-size: 13px; color: #7a1828; }
+.rfi:last-child { border-bottom: none; }
+.rfd { width: 6px; height: 6px; border-radius: 50%; background: var(--ar); flex-shrink: 0; }
+
+/* ── MNEM ── */
+.mnem-card { background: white; border: 1px solid var(--border); border-radius: var(--rad); padding: 14px; margin-bottom: 12px; }
+.mnem-card h3 { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.mr { display: flex; align-items: center; gap: 12px; padding: 4px 0; }
+.ml { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 800; width: 28px; text-align: center; flex-shrink: 0; }
+.md { font-size: 13px; color: var(--muted); }
+
+/* ── SCORE BADGE ── */
+.score-badge { text-align: center; padding: 14px; background: white; border-radius: var(--rad); border: 1px solid var(--border); margin-bottom: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--muted); }
+.score-badge.done { color: var(--ok); font-weight: 600; }
+
+/* ── PROGRESS BAR ── */
+.progress-wrap { background: var(--surface2); border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; border: 1px solid var(--border); }
+.progress-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; display: flex; justify-content: space-between; }
+.progress-bar { height: 5px; background: var(--border); border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--ag); border-radius: 10px; transition: width .3s; }
+
+/* ── FIRMA ── */
+.firma { border: 1.5px dashed #c0c8e0; border-radius: 10px; padding: 18px; text-align: center; margin-top: 10px; }
+.firma p { font-size: 10px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 7px; }
+.firma input { background: transparent; border: none; border-bottom: 1.5px solid #c0c8e0; color: var(--text); font-size: 15px; width: 200px; text-align: center; padding: 4px; }
+.firma input:focus { outline: none; border-bottom-color: var(--ab); }
+
+/* ── RESET BTN ── */
+.btn-rst { width: 100%; padding: 14px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-radius: var(--rad); font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px; }
+.btn-rst:active { background: #e8eaf0; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Caduta Non Testimoniata</div>
+    <div class="topbar-sub">Checklist Medica Operativa</div>
+  </div>
+  <div class="topbar-badge" id="prog-badge">0 / 10</div>
+</div>
+
+<!-- SCREENS -->
+<div class="screens">
+
+  <!-- ── SCREEN: FORM ── -->
+  <div class="screen active" id="sc-form">
+
+    <!-- META -->
+    <div class="scard">
+      <div class="scard-head"><div class="stitle" style="color:var(--ab)">📋 Dati Scheda</div></div>
+      <div class="sbody">
+        <div class="meta-grid">
+          <div class="mf"><label>Data</label><input type="date" id="data" oninput="gen()"></div>
+          <div class="mf"><label>Ora intervento</label><input type="time" id="ora" oninput="gen()"></div>
+          <div class="mf"><label>Paziente</label><input type="text" id="paziente" placeholder="Cognome Nome" oninput="gen()"></div>
+          <div class="mf"><label>Reparto</label><input type="text" id="reparto" placeholder="es. Geriatria" oninput="gen()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S1 -->
+    <div class="scard c1">
+      <div class="scard-head"><div class="snum">1</div><div class="stitle">Attivazione e Contesto</div></div>
+      <div class="sbody">
+        <div class="fg">
+          <div class="fl">Ora chiamata</div>
+          <input type="time" class="ti" id="ora-ch" style="margin-top:0" oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">Segnalata da</div>
+          <div class="chips" id="seg">
+            <div class="chip" data-v="infermiere" onclick="ck(this)"><div class="ck"></div>Infermiere</div>
+            <div class="chip" data-v="OSS" onclick="ck(this)"><div class="ck"></div>OSS</div>
+            <div class="chip" data-v="altro personale" onclick="ck(this)"><div class="ck"></div>Altro</div>
+          </div>
+          <input type="text" class="ti" id="seg-a" placeholder="Specificare..." oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">"Tonfo" udito</div>
+          <div class="chips" id="tonfo">
+            <div class="chip" data-v="sì" onclick="rd(this)"><div class="rd"></div>Sì</div>
+            <div class="chip" data-v="no" onclick="rd(this)"><div class="rd"></div>No</div>
+            <div class="chip" data-v="non noto" onclick="rd(this)"><div class="rd"></div>Non noto</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Paziente trovato</div>
+          <div class="chips" id="trovato">
+            <div class="chip" data-v="a terra" onclick="rd(this)"><div class="rd"></div>A terra</div>
+            <div class="chip" data-v="seduto" onclick="rd(this)"><div class="rd"></div>Seduto</div>
+            <div class="chip" data-v="sdraiato" onclick="rd(this)"><div class="rd"></div>Sdraiato</div>
+            <div class="chip" data-v="in piedi" onclick="rd(this)"><div class="rd"></div>In piedi</div>
+          </div>
+          <input type="text" class="ti" id="trovato-a" placeholder="Altra posizione..." oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">Stato all'arrivo</div>
+          <div class="chips" id="stato">
+            <div class="chip" data-v="vigile" onclick="ck(this)"><div class="ck"></div>Vigile</div>
+            <div class="chip" data-v="confuso" onclick="ck(this)"><div class="ck"></div>Confuso</div>
+            <div class="chip" data-v="soporoso" onclick="ck(this)"><div class="ck"></div>Soporoso</div>
+            <div class="chip" data-v="incosciente" onclick="ck(this)"><div class="ck"></div>Incosciente</div>
+            <div class="chip" data-v="collaborante" onclick="ck(this)"><div class="ck"></div>Collaborante</div>
+            <div class="chip" data-v="non collaborante" onclick="ck(this)"><div class="ck"></div>Non coll.</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Dinamica evento</div>
+          <div class="chips col" id="din">
+            <div class="chip" data-v="in bagno / per urinare / per defecare" onclick="ck(this)"><div class="ck"></div>Bagno / urinare / defecare</div>
+            <div class="chip" data-v="tornava dal bagno" onclick="ck(this)"><div class="ck"></div>Tornava dal bagno</div>
+            <div class="chip" data-v="tentava di alzarsi dal letto" onclick="ck(this)"><div class="ck"></div>Tentava di alzarsi dal letto</div>
+            <div class="chip" data-v="tentava di scavalcare le spondine" onclick="ck(this)"><div class="ck"></div>Tentava di scavalcare le spondine</div>
+            <div class="chip" data-v="deambulava in stanza / corridoio" onclick="ck(this)"><div class="ck"></div>Deambulava in stanza / corridoio</div>
+            <div class="chip" data-v="si chinava per raccogliere qualcosa" onclick="ck(this)"><div class="ck"></div>Si chinava per raccogliere qualcosa</div>
+            <div class="chip" data-v="trasferimento letto-sedia / sedia-letto" onclick="ck(this)"><div class="ck"></div>Trasferimento letto–sedia</div>
+            <div class="chip" data-v="si vestiva / si svestiva" onclick="ck(this)"><div class="ck"></div>Si vestiva / svestiva</div>
+            <div class="chip" data-v="tentava di raggiungere il campanello / effetti personali" onclick="ck(this)"><div class="ck"></div>Raggiungere campanello / effetti personali</div>
+          </div>
+          <input type="text" class="ti" id="din-a" placeholder="Altro..." oninput="gen()">
+        </div>
+      </div>
+    </div>
+
+    <!-- S2 -->
+    <div class="scard c2">
+      <div class="scard-head"><div class="snum">2</div><div class="stitle">Dinamica Riferita</div></div>
+      <div class="sbody">
+        <div class="fg">
+          <div class="fl">Sintomi pre-evento</div>
+          <div class="chips col" id="sint">
+            <div class="chip" data-v="nessun sintomo pre-evento riferito" onclick="ck(this)"><div class="ck"></div>Nessuno</div>
+            <div class="chip" data-v="capogiro / vertigine" onclick="ck(this)"><div class="ck"></div>Capogiro / vertigine</div>
+            <div class="chip" data-v="lipotimia" onclick="ck(this)"><div class="ck"></div>Lipotimia</div>
+            <div class="chip" data-v="sincope" onclick="ck(this)"><div class="ck"></div>Sincope</div>
+            <div class="chip" data-v="dolore toracico" onclick="ck(this)"><div class="ck"></div>Dolore toracico</div>
+            <div class="chip" data-v="cardiopalmo / palpitazioni" onclick="ck(this)"><div class="ck"></div>Cardiopalmo / palpitazioni</div>
+            <div class="chip" data-v="dispnea" onclick="ck(this)"><div class="ck"></div>Dispnea</div>
+            <div class="chip" data-v="disturbi visivi" onclick="ck(this)"><div class="ck"></div>Disturbi visivi</div>
+          </div>
+          <input type="text" class="ti" id="sint-a" placeholder="Altro..." oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">Modalità caduta</div>
+          <div class="chips col" id="mod">
+            <div class="chip" data-v="accasciamento controllato" onclick="ck(this)"><div class="ck"></div>Accasciamento controllato</div>
+            <div class="chip" data-v="caduta improvvisa" onclick="ck(this)"><div class="ck"></div>Caduta improvvisa</div>
+            <div class="chip" data-v="caduta da altezza" onclick="ck(this)"><div class="ck"></div>Caduta da altezza</div>
+          </div>
+          <input type="text" class="ti" id="mod-a" placeholder="Specificare / altezza..." oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">Perdita di coscienza</div>
+          <div class="chips" id="pdc">
+            <div class="chip" data-v="negata" onclick="rd(this)"><div class="rd"></div>Negata</div>
+            <div class="chip" data-v="riferita" onclick="rd(this)"><div class="rd"></div>Riferita</div>
+            <div class="chip" data-v="non valutabile" onclick="rd(this)"><div class="rd"></div>Non valutabile</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Trauma cranico</div>
+          <div class="chips" id="tcd">
+            <div class="chip" data-v="negato" onclick="rd(this)"><div class="rd"></div>Negato</div>
+            <div class="chip" data-v="possibile" onclick="rd(this)"><div class="rd"></div>Possibile</div>
+            <div class="chip" data-v="non escludibile" onclick="rd(this)"><div class="rd"></div>Non escludibile</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Note dinamica</div>
+          <textarea class="ti" id="note-din" placeholder="Annotare informazioni aggiuntive..." oninput="gen()"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3 -->
+    <div class="scard c3">
+      <div class="scard-head"><div class="snum">3</div><div class="stitle">Parametri Vitali</div></div>
+      <div class="sbody">
+        <div class="vg">
+          <div class="vb"><label>PA sist.</label><input type="number" id="pa1" placeholder="---" min="50" max="250" oninput="gen()"><div class="un">mmHg</div></div>
+          <div class="vb"><label>PA diast.</label><input type="number" id="pa2" placeholder="---" min="30" max="150" oninput="gen()"><div class="un">mmHg</div></div>
+          <div class="vb"><label>FC</label><input type="number" id="fc" placeholder="---" min="20" max="250" oninput="gen()"><div class="un">bpm</div></div>
+          <div class="vb"><label>SpO₂</label><input type="number" id="spo2" placeholder="--" min="50" max="100" oninput="gen()"><div class="un">%</div></div>
+          <div class="vb"><label>TC</label><input type="number" id="temp" placeholder="--.-" step="0.1" min="33" max="42" oninput="gen()"><div class="un">°C</div></div>
+          <div class="vb"><label>FR</label><input type="number" id="fr" placeholder="--" min="5" max="60" oninput="gen()"><div class="un">atti/min</div></div>
+          <div class="vb" style="border-color:#e0d090;grid-column:span 2"><label>Glicemia</label><input type="number" id="glic" placeholder="---" min="30" max="600" style="color:var(--ay)" oninput="gen()"><div class="un">mg/dL</div></div>
+        </div>
+        <input type="text" class="ti" id="altri-ril" placeholder="Altri rilievi (ritmo, ECG...)" oninput="gen()">
+      </div>
+    </div>
+
+    <!-- S4 -->
+    <div class="scard c4">
+      <div class="scard-head"><div class="snum">4</div><div class="stitle">Esame Neurologico</div></div>
+      <div class="sbody">
+        <div class="fg">
+          <div class="fl">Coscienza / GCS</div>
+          <div class="chips col" id="gcs">
+            <div class="chip" data-v="vigile (GCS 15)" onclick="rd(this)"><div class="rd"></div>Vigile (GCS 15)</div>
+            <div class="chip" data-v="confuso" onclick="rd(this)"><div class="rd"></div>Confuso — GCS: <input type="number" id="gcs-c" min="10" max="14" style="width:44px;border:none;border-bottom:1.5px solid #c0c8e0;background:transparent;font-size:14px;padding:0 2px;text-align:center" onclick="event.stopPropagation()" oninput="gen()"></div>
+            <div class="chip" data-v="soporoso" onclick="rd(this)"><div class="rd"></div>Soporoso — GCS: <input type="number" id="gcs-s" min="9" max="13" style="width:44px;border:none;border-bottom:1.5px solid #c0c8e0;background:transparent;font-size:14px;padding:0 2px;text-align:center" onclick="event.stopPropagation()" oninput="gen()"></div>
+            <div class="chip" data-v="incosciente" onclick="rd(this)"><div class="rd"></div>Incosciente — GCS: <input type="number" id="gcs-i" min="3" max="8" style="width:44px;border:none;border-bottom:1.5px solid #c0c8e0;background:transparent;font-size:14px;padding:0 2px;text-align:center" onclick="event.stopPropagation()" oninput="gen()"></div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Linguaggio</div>
+          <div class="chips" id="ling">
+            <div class="chip" data-v="normale" onclick="rd(this)"><div class="rd"></div>Normale</div>
+            <div class="chip" data-v="disartrico" onclick="rd(this)"><div class="rd"></div>Disartrico</div>
+            <div class="chip" data-v="afasico" onclick="rd(this)"><div class="rd"></div>Afasico</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Deficit focali</div>
+          <div class="chips" id="deficit">
+            <div class="chip" data-v="assenti" onclick="rd(this)"><div class="rd"></div>Assenti</div>
+            <div class="chip" data-v="presenti" onclick="rd(this)"><div class="rd"></div>Presenti</div>
+          </div>
+          <input type="text" class="ti" id="deficit-a" placeholder="Specificare..." oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">Segni crisi epilettica</div>
+          <div class="chips" id="epil">
+            <div class="chip" data-v="morsus" onclick="ck(this)"><div class="ck"></div>Morsus</div>
+            <div class="chip" data-v="incontinenza sfinterica" onclick="ck(this)"><div class="ck"></div>Incontinenza sfinterica</div>
+            <div class="chip" data-v="assenti" onclick="ck(this)"><div class="ck"></div>Assenti</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- S5 -->
+    <div class="scard c5">
+      <div class="scard-head"><div class="snum">5</div><div class="stitle">Obiettività Trauma</div></div>
+      <div class="sbody">
+        <div id="tblocks"></div>
+        <div class="ss">
+          <div class="sst">Segmenti corporei</div>
+          <div class="fg">
+            <div class="fl">Torace</div>
+            <div class="chips" id="torace"><div class="chip" data-v="torace stabile e non dolente" onclick="ck(this)"><div class="ck"></div>Stabile, non dolente</div><div class="chip" data-v="torace dolente" onclick="ck(this)"><div class="ck"></div>Dolente</div></div>
+          </div>
+          <div class="fg">
+            <div class="fl">Addome</div>
+            <div class="chips" id="addome"><div class="chip" data-v="addome trattabile e non dolente" onclick="ck(this)"><div class="ck"></div>Trattabile, non dolente</div><div class="chip" data-v="addome dolente" onclick="ck(this)"><div class="ck"></div>Dolente</div></div>
+          </div>
+          <div class="fg">
+            <div class="fl">Bacino</div>
+            <div class="chips" id="bacino"><div class="chip" data-v="bacino stabile e non dolente" onclick="ck(this)"><div class="ck"></div>Stabile, non dolente</div><div class="chip" data-v="bacino dolente" onclick="ck(this)"><div class="ck"></div>Dolente</div></div>
+          </div>
+          <div class="fg">
+            <div class="fl">Arti superiori</div>
+            <div class="chips" id="as"><div class="chip" data-v="arti superiori: motilità conservata, non dolenti" onclick="ck(this)"><div class="ck"></div>Motilità conservata</div><div class="chip" data-v="arti superiori: dolorabilità" onclick="ck(this)"><div class="ck"></div>Dolorabilità</div></div>
+          </div>
+          <div class="fg">
+            <div class="fl">Arti inferiori</div>
+            <div class="chips" id="ai"><div class="chip" data-v="arti inferiori: motilità conservata, non dolenti" onclick="ck(this)"><div class="ck"></div>Motilità conservata</div><div class="chip" data-v="arti inferiori: dolorabilità" onclick="ck(this)"><div class="ck"></div>Dolorabilità</div></div>
+          </div>
+          <div class="fg">
+            <div class="fl">Dolore alla mobilizzazione</div>
+            <div class="chips" id="dmob"><div class="chip" data-v="dolore alla mobilizzazione assente" onclick="rd(this)"><div class="rd"></div>Assente</div><div class="chip" data-v="dolore alla mobilizzazione presente" onclick="rd(this)"><div class="rd"></div>Presente</div></div>
+            <input type="text" class="ti" id="dmob-a" placeholder="Sede..." oninput="gen()">
+          </div>
+        </div>
+        <div class="fg" style="margin-top:10px">
+          <div class="fl">Nuove lesioni cutanee</div>
+          <div class="chips" id="lcut"><div class="chip" data-v="assenza di nuove lesioni cutanee" onclick="rd(this)"><div class="rd"></div>Assenti</div><div class="chip" data-v="nuove lesioni cutanee presenti" onclick="rd(this)"><div class="rd"></div>Presenti</div></div>
+          <input type="text" class="ti" id="lcut-a" placeholder="Descrivere..." oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">Lesioni pregresse note</div>
+          <div class="chips" id="lpreg"><div class="chip" data-v="lesioni pregresse note presenti" onclick="rd(this)"><div class="rd"></div>Sì</div><div class="chip" data-v="assenza di lesioni pregresse note" onclick="rd(this)"><div class="rd"></div>No</div></div>
+          <input type="text" class="ti" id="lpreg-a" placeholder="Sede..." oninput="gen()">
+        </div>
+      </div>
+    </div>
+
+    <!-- S6 -->
+    <div class="scard c6">
+      <div class="scard-head"><div class="snum">6</div><div class="stitle">Valutazione Clinica</div></div>
+      <div class="sbody">
+        <div class="fg">
+          <div class="fl">Quadro attuale</div>
+          <div class="chips col" id="quadro">
+            <div class="chip" data-v="non suggestivo per trauma maggiore" onclick="ck(this)"><div class="ck"></div>Non suggestivo per trauma maggiore</div>
+            <div class="chip" data-v="non evidenza di deficit neurologici acuti" onclick="ck(this)"><div class="ck"></div>Non evidenza deficit neurologici acuti</div>
+          </div>
+          <input type="text" class="ti" id="quadro-a" placeholder="Altro..." oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">Ipotesi causale</div>
+          <div class="chips col" id="ipo">
+            <div class="chip" data-v="lipotimia ortostatica" onclick="ck(this)"><div class="ck"></div>Lipotimia ortostatica</div>
+            <div class="chip" data-v="sincope" onclick="ck(this)"><div class="ck"></div>Sincope</div>
+            <div class="chip" data-v="caduta meccanica" onclick="ck(this)"><div class="ck"></div>Caduta meccanica</div>
+            <div class="chip" data-v="ipoglicemia" onclick="ck(this)"><div class="ck"></div>Ipoglicemia</div>
+            <div class="chip" data-v="disturbo ritmico" onclick="ck(this)"><div class="ck"></div>Disturbo ritmico</div>
+          </div>
+          <input type="text" class="ti" id="ipo-a" placeholder="Altro..." oninput="gen()">
+        </div>
+      </div>
+    </div>
+
+    <!-- S7 -->
+    <div class="scard c7">
+      <div class="scard-head"><div class="snum">7</div><div class="stitle">Imaging e Accertamenti</div></div>
+      <div class="sbody">
+        <div class="ss" style="border-color:#f0b8bc;background:#fdf5f5">
+          <div class="sst" style="color:var(--ar)">⚠ Indicazioni TC cranio urgente</div>
+          <div class="chips col" id="tci">
+            <div class="chip" data-v="trauma cranico riferito / sospetto" onclick="ck(this)"><div class="ck"></div>Trauma cranico riferito / sospetto</div>
+            <div class="chip" data-v="perdita di coscienza" onclick="ck(this)"><div class="ck"></div>Perdita di coscienza</div>
+            <div class="chip" data-v="deficit neurologici" onclick="ck(this)"><div class="ck"></div>Deficit neurologici</div>
+            <div class="chip" data-v="terapia anticoagulante / antiaggregante" onclick="ck(this)"><div class="ck"></div>Anticoag. / antiaggregazione</div>
+            <div class="chip" data-v="età >65 aa, meccanismo non chiaro" onclick="ck(this)"><div class="ck"></div>Età >65 aa + meccanismo non chiaro</div>
+          </div>
+          <input type="text" class="ti" id="tci-a" placeholder="Altre indicazioni..." oninput="gen()">
+          <textarea class="ti" id="tci-m" placeholder="Motivazione..." oninput="gen()"></textarea>
+          <div class="chip" id="tcr" data-v="TC CRANIO URGENTE RICHIESTA" onclick="ck(this)" style="width:100%;border-radius:10px;border-color:#f0b8bc;color:var(--ar);margin-top:8px;font-weight:700"><div class="ck" style="border-color:var(--ar)"></div>✅ Richiesta TC cranio urgente</div>
+        </div>
+        <div class="ss" style="margin-top:10px">
+          <div class="sst">Non indicazione immediata TC</div>
+          <div class="chips col" id="tcn">
+            <div class="chip" data-v="trauma cranico negato" onclick="ck(this)"><div class="ck"></div>Trauma cranico negato</div>
+            <div class="chip" data-v="GCS 15, esame neurologico negativo" onclick="ck(this)"><div class="ck"></div>GCS 15, esame neurologico negativo</div>
+            <div class="chip" data-v="assenza di segni traumatici al capo" onclick="ck(this)"><div class="ck"></div>Assenza segni traumatici al capo</div>
+            <div class="chip" data-v="meccanismo a basso rischio" onclick="ck(this)"><div class="ck"></div>Meccanismo a basso rischio</div>
+          </div>
+          <textarea class="ti" id="tcn-m" placeholder="Motivazione..." oninput="gen()"></textarea>
+          <div class="chip" id="tcno" data-v="TC non indicata; si imposta monitoraggio" onclick="ck(this)" style="width:100%;border-radius:10px;margin-top:8px"><div class="ck"></div>TC non indicata → monitoraggio</div>
+        </div>
+        <div class="fg" style="margin-top:10px">
+          <div class="fl">Altri accertamenti</div>
+          <div class="chips col" id="esa">
+            <div class="chip" data-v="emocromo" onclick="ck(this)"><div class="ck"></div>Emocromo</div>
+            <div class="chip" data-v="elettroliti e funzionalità renale" onclick="ck(this)"><div class="ck"></div>Elettroliti, funz. renale</div>
+            <div class="chip" data-v="coagulazione" onclick="ck(this)"><div class="ck"></div>Coagulazione</div>
+            <div class="chip" data-v="ECG" onclick="ck(this)"><div class="ck"></div>ECG</div>
+          </div>
+          <input type="text" class="ti" id="rx" placeholder="Rx sede (es. anca dx, bacino...)" oninput="gen()">
+          <input type="text" class="ti" id="esa-a" placeholder="Altro..." oninput="gen()">
+        </div>
+      </div>
+    </div>
+
+    <!-- S8 -->
+    <div class="scard c8">
+      <div class="scard-head"><div class="snum">8</div><div class="stitle">Terapia e Gestione</div></div>
+      <div class="sbody">
+        <div class="fg">
+          <div class="chips col" id="ter">
+            <div class="chip" data-v="modifica / sospensione terapia" onclick="ck(this)"><div class="ck"></div>Modifica / sospensione terapia</div>
+            <div class="chip" data-v="idratazione / infusione" onclick="ck(this)"><div class="ck"></div>Idratazione / infusione</div>
+            <div class="chip" data-v="correzioni metaboliche" onclick="ck(this)"><div class="ck"></div>Correzioni metaboliche</div>
+          </div>
+          <input type="text" class="ti" id="ter-a" placeholder="Farmaci / specificare..." oninput="gen()">
+          <textarea class="ti" id="alt-ter" placeholder="Altre terapie..." oninput="gen()"></textarea>
+        </div>
+        <div class="fg">
+          <div class="fl">Consulenze richieste</div>
+          <input type="text" class="ti" id="cons" placeholder="es. ortopedia, neurologia..." oninput="gen()">
+        </div>
+      </div>
+    </div>
+
+    <!-- S9 -->
+    <div class="scard c9">
+      <div class="scard-head"><div class="snum">9</div><div class="stitle">Monitoraggio e Piano</div></div>
+      <div class="sbody">
+        <div class="fg">
+          <div class="fl">Parametri vitali – ogni</div>
+          <div class="chips" id="mvit">
+            <div class="chip" data-v="ogni 1 ora" onclick="rd(this)"><div class="rd"></div>1 h</div>
+            <div class="chip" data-v="ogni 2 ore" onclick="rd(this)"><div class="rd"></div>2 h</div>
+            <div class="chip" data-v="ogni 4 ore" onclick="rd(this)"><div class="rd"></div>4 h</div>
+            <div class="chip" data-v="monitoraggio continuo parametri vitali" onclick="rd(this)"><div class="rd"></div>Continuo</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Neurologico – ogni</div>
+          <div class="chips" id="mneo">
+            <div class="chip" data-v="ogni 1 ora" onclick="rd(this)"><div class="rd"></div>1 h</div>
+            <div class="chip" data-v="ogni 2 ore" onclick="rd(this)"><div class="rd"></div>2 h</div>
+            <div class="chip" data-v="ogni 4 ore" onclick="rd(this)"><div class="rd"></div>4 h</div>
+            <div class="chip" data-v="monitoraggio neurologico continuo" onclick="rd(this)"><div class="rd"></div>Continuo</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Rivalutazione medica entro le ore</div>
+          <input type="time" class="ti" id="riv-h" oninput="gen()">
+          <input type="text" class="ti" id="riv-c" placeholder="Anticipare se..." oninput="gen()">
+        </div>
+        <div class="fg">
+          <div class="fl">Segnalare urgentemente se compaiono</div>
+          <div class="chips" id="all">
+            <div class="chip" data-v="cefalea" onclick="ck(this)"><div class="ck"></div>Cefalea</div>
+            <div class="chip" data-v="vomito" onclick="ck(this)"><div class="ck"></div>Vomito</div>
+            <div class="chip" data-v="sonnolenza" onclick="ck(this)"><div class="ck"></div>Sonnolenza</div>
+            <div class="chip" data-v="confusione" onclick="ck(this)"><div class="ck"></div>Confusione</div>
+            <div class="chip" data-v="nuovi deficit neurologici" onclick="ck(this)"><div class="ck"></div>Deficit neuro</div>
+            <div class="chip" data-v="algie ingravescenti" onclick="ck(this)"><div class="ck"></div>Algie</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Note piano / consegne</div>
+          <textarea class="ti" id="np" placeholder="Consegne per il team infermieristico..." oninput="gen()"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- S10 -->
+    <div class="scard c10">
+      <div class="scard-head"><div class="snum">10</div><div class="stitle">Comunicazioni</div></div>
+      <div class="sbody">
+        <div class="fg">
+          <div class="fl">Comunicazioni eseguite</div>
+          <div class="chips col" id="com">
+            <div class="chip" data-v="informato il personale infermieristico / OSS" onclick="ck(this)"><div class="ck"></div>Informato personale infermieristico / OSS</div>
+            <div class="chip" data-v="informati familiari / caregiver" onclick="ck(this)"><div class="ck"></div>Informati familiari / caregiver</div>
+            <div class="chip" data-v="caso consegnato al collega / team di riferimento" onclick="ck(this)"><div class="ck"></div>Consegnato al collega / team</div>
+            <div class="chip" data-v="altri professionisti informati" onclick="ck(this)"><div class="ck"></div>Altri professionisti informati</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Allegati</div>
+          <div class="chips col" id="alleg">
+            <div class="chip" data-v="referto TC / esami allegato" onclick="ck(this)"><div class="ck"></div>Referto TC / esami</div>
+            <div class="chip" data-v="tracciato ECG allegato" onclick="ck(this)"><div class="ck"></div>Tracciato ECG</div>
+          </div>
+        </div>
+        <div class="firma">
+          <p>Firma e Timbro Medico</p>
+          <input type="text" placeholder="Dott. / Dott.ssa ...">
+        </div>
+        <button class="btn-rst" onclick="rst()">🗑 Azzera scheda</button>
+      </div>
+    </div>
+
+  </div><!-- /sc-form -->
+
+  <!-- ── SCREEN: TESTO ── -->
+  <div class="screen" id="sc-narr">
+    <div class="narr-wrap">
+      <div class="narr-box" id="nout"><span class="narr-ph">Compila la scheda per generare il testo narrativo clinico...</span></div>
+      <button class="btn-copy" onclick="cpNarr()" id="cpbtn">
+        <span>📋</span><span>Copia testo negli appunti</span>
+      </button>
+      <button class="btn-share" onclick="shareNarr()" id="sharebtn">
+        <span>📤</span><span>Condividi (WhatsApp, email...)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: CHECK ── -->
+  <div class="screen" id="sc-check">
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Completamento scheda</span><span id="prog-pct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="score-badge" id="cscore">Rispondere alle 6 domande per completare il check finale</div>
+
+    <div class="cfq" id="fq1">
+      <h4><span class="qn" style="background:#fdecea;color:var(--ar)">1</span>TRAUMA CRANICO?</h4>
+      <p>Ho scritto chiaramente se c'è stato trauma cranico?</p>
+      <div class="chips" id="rfq1"><div class="chip" onclick="rd(this);cfq(1)" style="font-size:13px"><div class="rd"></div>Sì</div><div class="chip" onclick="rd(this);cfq(1)" style="font-size:13px"><div class="rd"></div>No</div></div>
+    </div>
+    <div class="cfq" id="fq2">
+      <h4><span class="qn" style="background:#e6f0fc;color:var(--ab)">2</span>NEUROLOGICO?</h4>
+      <p>Ho escluso evento neurologico acuto per iscritto?</p>
+      <div class="chips" id="rfq2"><div class="chip" onclick="rd(this);cfq(2)" style="font-size:13px"><div class="rd"></div>Sì</div><div class="chip" onclick="rd(this);cfq(2)" style="font-size:13px"><div class="rd"></div>No</div></div>
+    </div>
+    <div class="cfq" id="fq3">
+      <h4><span class="qn" style="background:#fdf0e6;color:var(--ao)">3</span>IMAGING (TC)?</h4>
+      <p>Ho preso posizione sulla TC con motivazione scritta?</p>
+      <div class="chips" id="rfq3"><div class="chip" onclick="rd(this);cfq(3)" style="font-size:13px"><div class="rd"></div>Sì</div><div class="chip" onclick="rd(this);cfq(3)" style="font-size:13px"><div class="rd"></div>No</div></div>
+    </div>
+    <div class="cfq" id="fq4">
+      <h4><span class="qn" style="background:#fef8e2;color:var(--ay)">4</span>IPOTESI CLINICA?</h4>
+      <p>Ho scritto un'ipotesi causale?</p>
+      <div class="chips" id="rfq4"><div class="chip" onclick="rd(this);cfq(4)" style="font-size:13px"><div class="rd"></div>Sì</div><div class="chip" onclick="rd(this);cfq(4)" style="font-size:13px"><div class="rd"></div>No</div></div>
+    </div>
+    <div class="cfq" id="fq5">
+      <h4><span class="qn" style="background:#e6f4ee;color:var(--ag)">5</span>PIANO E TEMPI?</h4>
+      <p>Ho definito cosa succede dopo e quando rivaluto?</p>
+      <div class="chips" id="rfq5"><div class="chip" onclick="rd(this);cfq(5)" style="font-size:13px"><div class="rd"></div>Sì</div><div class="chip" onclick="rd(this);cfq(5)" style="font-size:13px"><div class="rd"></div>No</div></div>
+    </div>
+    <div class="cfq" id="fq6">
+      <h4><span class="qn" style="background:#eeebfc;color:var(--ap)">6</span>LESIONI NUOVE?</h4>
+      <p>Ho differenziato lesioni vecchie da nuove?</p>
+      <div class="chips" id="rfq6"><div class="chip" onclick="rd(this);cfq(6)" style="font-size:13px"><div class="rd"></div>Sì</div><div class="chip" onclick="rd(this);cfq(6)" style="font-size:13px"><div class="rd"></div>No</div></div>
+    </div>
+
+    <div class="mnem-card">
+      <h3>Mnemonico · TNIPL</h3>
+      <div class="mr"><span class="ml" style="color:var(--ar)">T</span><span class="md">Trauma cranico</span></div>
+      <div class="mr"><span class="ml" style="color:var(--ab)">N</span><span class="md">Neurologico</span></div>
+      <div class="mr"><span class="ml" style="color:var(--ao)">I</span><span class="md">Imaging (deciso e motivato)</span></div>
+      <div class="mr"><span class="ml" style="color:var(--ay)">I</span><span class="md">Ipotesi (scritta)</span></div>
+      <div class="mr"><span class="ml" style="color:var(--ag)">P</span><span class="md">Piano (tempo definito)</span></div>
+      <div class="mr"><span class="ml" style="color:var(--ap)">L</span><span class="md">Lesioni (nuove vs vecchie)</span></div>
+    </div>
+
+    <div class="rf-card">
+      <h3>⚠ Red Flags</h3>
+      <div class="rfi"><div class="rfd"></div>Peggioramento stato di coscienza</div>
+      <div class="rfi"><div class="rfd"></div>Nuovi deficit neurologici</div>
+      <div class="rfi"><div class="rfd"></div>Instabilità emodinamica</div>
+      <div class="rfi"><div class="rfd"></div>Cefalea intensa / vomito</div>
+      <div class="rfi"><div class="rfd"></div>Dolore toracico / dispnea</div>
+      <div class="rfi"><div class="rfd"></div>Nuova caduta</div>
+    </div>
+
+  </div><!-- /sc-check -->
+
+</div><!-- /screens -->
+
+<!-- BOTTOM NAV -->
+<div class="botnav">
+  <button class="navbtn active" id="nav-form" onclick="goTo('form')">
+    <span class="icon">📋</span>Scheda
+  </button>
+  <button class="navbtn" id="nav-narr" onclick="goTo('narr')">
+    <span class="icon">📝</span>Testo
+  </button>
+  <button class="navbtn" id="nav-check" onclick="goTo('check')">
+    <span class="icon">✅</span>Check
+  </button>
+</div>
+
+<script>
+// ── UTILS ──
+const $ = id => document.getElementById(id);
+const val = id => { const e=$(id); return e ? e.value.trim() : ''; };
+const checked = id => { const e=$(id); return e ? [...e.querySelectorAll('.chip.on')].map(c=>c.dataset.v).filter(Boolean) : []; };
+const selected = id => { const e=$(id); if(!e) return null; const r=e.querySelector('.chip.ron'); return r ? (r.dataset.v || r.textContent.replace(/[▪•]/g,'').trim()) : null; };
+
+// ── NAV ──
+let curScreen = 'form';
+function goTo(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.navbtn').forEach(b => b.classList.remove('active'));
+  $('sc-' + name).classList.add('active');
+  $('nav-' + name).classList.add('active');
+  curScreen = name;
+  if (name === 'narr') genNarr();
+}
+
+// ── CHECKBOX ──
+function ck(el) { el.classList.toggle('on'); gen(); }
+
+// ── RADIO ──
+function rd(el) {
+  const p = el.parentElement;
+  p.querySelectorAll('.chip').forEach(c => c.classList.remove('ron'));
+  el.classList.add('ron');
+  gen();
+}
+
+// ── FINAL CHECK ──
+const fqa = {};
+function cfq(n) {
+  fqa[n] = true;
+  $('fq' + n).classList.add('ok');
+  const c = Object.keys(fqa).length;
+  const s = $('cscore');
+  if (c === 6) { s.classList.add('done'); s.textContent = '✅ Check finale completato — pronto per firmare'; }
+  else { s.classList.remove('done'); s.textContent = c + '/6 domande completate'; }
+}
+
+// ── TRAUMA BLOCKS ──
+const tRows = ['Rachide cervicale', 'Rachide dorsale', 'Rachide lombare', 'Capo / collo'];
+const tbl = $('tblocks');
+tRows.forEach(r => {
+  const key = 'tr-' + r.replace(/\s*\/\s*/g,'-').replace(/\s+/g,'-').toLowerCase();
+  const div = document.createElement('div');
+  div.className = 'tblock';
+  div.innerHTML = `
+    <div class="tblock-name">${r}</div>
+    <div class="tblock-chips chips" id="${key}">
+      <div class="chip" data-v="nega trauma / assenza segni al ${r.toLowerCase()}" onclick="ck(this)"><div class="ck"></div>Nega / assenza segni</div>
+      <div class="chip" data-v="${r}: non dolorabile" onclick="ck(this)"><div class="ck"></div>Non dolorabilità</div>
+      <div class="chip" data-v="${r}: dolorabile" onclick="ck(this)"><div class="ck"></div>Dolorabilità</div>
+    </div>
+    <input type="text" class="ti" id="tr-note-${r.replace(/\s*\/\s*/g,'-').replace(/\s+/g,'-').toLowerCase()}" placeholder="Note ${r}..." style="margin-top:6px" oninput="gen()">
+  `;
+  tbl.appendChild(div);
+});
+
+// ── PROGRESS ──
+function updateProgress() {
+  const ids = ['seg','tonfo','trovato','stato','sint','pdc','tcd','gcs','ling','deficit','quadro','ipo','tci','tcn','esa','ter','mvit','mneo','com'];
+  let filled = 0;
+  ids.forEach(id => {
+    const e = $(id);
+    if (!e) return;
+    if (e.querySelector('.chip.on,.chip.ron')) filled++;
+  });
+  const textIds = ['paziente','reparto','pa1','pa2','fc','spo2','temp'];
+  textIds.forEach(id => { if(val(id)) filled++; });
+  const total = ids.length + textIds.length;
+  const pct = Math.round(filled / total * 100);
+  if ($('prog-fill')) $('prog-fill').style.width = pct + '%';
+  if ($('prog-pct')) $('prog-pct').textContent = pct + '%';
+  if ($('prog-badge')) {
+    const sec = ids.filter(id => { const e=$(id); return e && e.querySelector('.chip.on,.chip.ron'); }).length;
+    $('prog-badge').textContent = sec + ' / 10';
+  }
+}
+
+// ── NARRATIVE ──
+function gen() {
+  updateProgress();
+  if (curScreen === 'narr') genNarr();
+}
+
+function genNarr() {
+  const parts = [];
+  const pz=val('paziente'), rp=val('reparto'), dt=val('data'), or=val('ora'), och=val('ora-ch');
+
+  let intro = 'Alle ore ' + (or || '--:--');
+  if (och && och !== or) intro += ' (chiamato alle ore ' + och + ')';
+  intro += ', il medico viene chiamato per caduta del paziente';
+  if (pz) intro += ' ' + pz; else intro += ' [NOME]';
+  if (rp) intro += ' (reparto: ' + rp + ')';
+  if (dt) { const d = dt.split('-'); intro += ', in data ' + d[2] + '/' + d[1] + '/' + d[0]; }
+  intro += '.';
+  parts.push(intro);
+
+  const seg=checked('seg'), segA=val('seg-a');
+  if(seg.length||segA) parts.push('Segnalata da: ' + [...seg,segA].filter(Boolean).join(', ') + '.');
+
+  const tonfo=selected('tonfo');
+  if(tonfo) parts.push('Tonfo udito: ' + tonfo + '.');
+
+  const trov=selected('trovato'), trovA=val('trovato-a');
+  if(trov||trovA) parts.push('Paziente trovato: ' + (trov||trovA) + '.');
+
+  const stato=checked('stato');
+  if(stato.length) parts.push("All'arrivo il paziente si presenta: " + stato.join(', ') + '.');
+
+  const din=checked('din'), dinA=val('din-a');
+  if(din.length||dinA) parts.push('Dinamica riferita: ' + [...din,dinA].filter(Boolean).join('; ') + '.');
+
+  // S2
+  const sint=checked('sint'), sintA=val('sint-a');
+  if(sint.length||sintA) {
+    const all=[...sint,sintA].filter(Boolean);
+    parts.push(all.length===1&&all[0].includes('nessun') ? 'Nessun sintomo pre-evento riferito.' : 'Sintomi pre-evento: ' + all.join(', ') + '.');
+  }
+  const mod=checked('mod'), modA=val('mod-a');
+  if(mod.length||modA) parts.push('Modalità della caduta: ' + [...mod,modA].filter(Boolean).join('; ') + '.');
+  const pdc=selected('pdc'); if(pdc) parts.push('Perdita di coscienza: ' + pdc + '.');
+  const tcd=selected('tcd'); if(tcd) parts.push('Trauma cranico: ' + tcd + '.');
+  const noteDin=val('note-din'); if(noteDin) parts.push('Note dinamica: ' + noteDin + '.');
+
+  // S3
+  const p1=val('pa1'),p2=val('pa2'),fc=val('fc'),spo2=val('spo2'),temp=val('temp'),fr=val('fr'),glic=val('glic');
+  const vit=[];
+  if(p1&&p2) vit.push('PA '+p1+'/'+p2+' mmHg');
+  if(fc) vit.push('FC '+fc+' bpm');
+  if(spo2) vit.push('SpO₂ '+spo2+'%');
+  if(temp) vit.push('TC '+temp+' °C');
+  if(fr) vit.push('FR '+fr+' atti/min');
+  if(glic) vit.push('glicemia '+glic+' mg/dL');
+  if(vit.length) parts.push('Parametri vitali: ' + vit.join(', ') + '.');
+  const arRil=val('altri-ril'); if(arRil) parts.push('Altri rilievi: '+arRil+'.');
+
+  // S4
+  const gcsSel=$('gcs') ? $('gcs').querySelector('.chip.ron') : null;
+  if(gcsSel) {
+    const gcsV=gcsSel.dataset.v;
+    const gcsC=val('gcs-c'), gcsS=val('gcs-s'), gcsI=val('gcs-i');
+    let gcsTxt=gcsV;
+    if(gcsV==='confuso'&&gcsC) gcsTxt='confuso (GCS '+gcsC+')';
+    if(gcsV==='soporoso'&&gcsS) gcsTxt='soporoso (GCS '+gcsS+')';
+    if(gcsV==='incosciente'&&gcsI) gcsTxt='incosciente (GCS '+gcsI+')';
+    parts.push('Stato di coscienza: ' + gcsTxt + '.');
+  }
+  const ling=selected('ling'); if(ling) parts.push('Linguaggio: '+ling+'.');
+  const def=selected('deficit'), defA=val('deficit-a');
+  if(def) parts.push('Deficit focali: ' + [def,defA].filter(Boolean).join(' — ') + '.');
+  const epil=checked('epil');
+  if(epil.length) parts.push('Segni crisi epilettica: ' + (epil.includes('assenti')?'assenti':epil.join(', ')) + '.');
+
+  // S5 trauma
+  const trParts=[];
+  tRows.forEach(r => {
+    const key='tr-'+r.replace(/\s*\/\s*/g,'-').replace(/\s+/g,'-').toLowerCase();
+    const ck2=checked(key);
+    const nt=val('tr-note-'+r.replace(/\s*\/\s*/g,'-').replace(/\s+/g,'-').toLowerCase());
+    if(ck2.length||nt) trParts.push([...ck2,nt?'('+nt+')':''].filter(Boolean).join(', '));
+  });
+  if(trParts.length) parts.push('Rachide / capo: '+trParts.join('; ')+'.');
+  const tor=checked('torace'); if(tor.length) parts.push('Torace: '+tor.join(', ')+'.');
+  const add=checked('addome'); if(add.length) parts.push('Addome: '+add.join(', ')+'.');
+  const bac=checked('bacino'); if(bac.length) parts.push('Bacino: '+bac.join(', ')+'.');
+  const as2=checked('as'); if(as2.length) parts.push(as2.join(', ')+'.');
+  const ai2=checked('ai'); if(ai2.length) parts.push(ai2.join(', ')+'.');
+  const dmob=selected('dmob'), dmobA=val('dmob-a');
+  if(dmob) parts.push('Dolore alla mobilizzazione: '+[dmob,dmobA].filter(Boolean).join(' — ')+'.');
+  const lcut=selected('lcut'), lcutA=val('lcut-a');
+  if(lcut) parts.push('Cute: '+[lcut,lcutA].filter(Boolean).join(' — ')+'.');
+  const lpreg=selected('lpreg'), lpregA=val('lpreg-a');
+  if(lpreg) parts.push('Lesioni pregresse: '+[lpreg,lpregA].filter(Boolean).join(' — ')+'.');
+
+  // S6
+  const qua=checked('quadro'), quaA=val('quadro-a');
+  if(qua.length||quaA) parts.push('Valutazione clinica: '+[...qua,quaA].filter(Boolean).join('; ')+'.');
+  const ipo=checked('ipo'), ipoA=val('ipo-a');
+  if(ipo.length||ipoA) parts.push('Ipotesi causale: '+[...ipo,ipoA].filter(Boolean).join(', ')+'.');
+
+  // S7
+  const tcrOn=$('tcr')?.classList.contains('on');
+  const tci=checked('tci'), tciA=val('tci-a'), tciM=val('tci-m');
+  if(tcrOn) {
+    let s='TC CRANIO URGENTE RICHIESTA';
+    const ind=[...tci,tciA].filter(Boolean);
+    if(ind.length) s+=' per: '+ind.join(', ');
+    if(tciM) s+='. '+tciM;
+    parts.push(s+'.');
+  } else if(tci.length||tciA) {
+    parts.push('Indicazioni TC: '+[...tci,tciA].filter(Boolean).join(', ')+(tciM?'. '+tciM:'')+'.');
+  }
+  const tcnoOn=$('tcno')?.classList.contains('on');
+  const tcn=checked('tcn'), tcnM=val('tcn-m');
+  if(tcnoOn||tcn.length) {
+    let s='TC cranio non indicata al momento';
+    if(tcn.length) s+=' ('+tcn.join(', ')+')';
+    if(tcnM) s+='. '+tcnM;
+    parts.push(s+'. Si imposta monitoraggio.');
+  }
+  const esa=checked('esa'), rx=val('rx'), esaA=val('esa-a');
+  if(esa.length||rx||esaA) {
+    const acc=[...esa, rx?'Rx '+rx:'', esaA].filter(Boolean);
+    parts.push('Accertamenti richiesti: '+acc.join(', ')+'.');
+  }
+
+  // S8
+  const ter=checked('ter'), terA=val('ter-a'), altTer=val('alt-ter'), cons=val('cons');
+  const tp=[...ter,terA,altTer].filter(Boolean);
+  if(tp.length) parts.push('Provvedimenti terapeutici: '+tp.join('; ')+'.');
+  if(cons) parts.push('Consulenze richieste: '+cons+'.');
+
+  // S9
+  const mvit=selected('mvit'), mneo=selected('mneo');
+  const pln=[mvit,mneo].filter(Boolean);
+  if(pln.length) parts.push('Monitoraggio: '+pln.join('; ')+'.');
+  const rivH=val('riv-h'), rivC=val('riv-c');
+  if(rivH||rivC) {
+    let rv='Rivalutazione medica';
+    if(rivH) rv+=' prevista entro le ore '+rivH;
+    if(rivC) rv+='; anticipare se: '+rivC;
+    parts.push(rv+'.');
+  }
+  const all=checked('all'); if(all.length) parts.push('Segnalare urgentemente se: '+all.join(', ')+'.');
+  const np=val('np'); if(np) parts.push('Note piano: '+np+'.');
+
+  // S10
+  const com=checked('com'); if(com.length) parts.push('Comunicazioni: '+com.join('; ')+'.');
+  const alleg=checked('alleg'); if(alleg.length) parts.push('Allegati: '+alleg.join(', ')+'.');
+
+  // Render
+  const el=$('nout');
+  const hasContent=parts.length>1||pz||rp||och;
+  el.innerHTML = hasContent ? parts.join('\n\n') : '<span class="narr-ph">Compila la scheda per generare il testo narrativo clinico...</span>';
+}
+
+// ── COPY ──
+function cpNarr() {
+  genNarr();
+  const t = $('nout')?.innerText || '';
+  if (!t || t.includes('Compila la scheda')) return;
+  navigator.clipboard.writeText(t).then(() => {
+    const b = $('cpbtn');
+    b.innerHTML = '<span>✅</span><span>Copiato negli appunti!</span>';
+    setTimeout(() => { b.innerHTML = '<span>📋</span><span>Copia testo negli appunti</span>'; }, 2500);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    const b = $('cpbtn');
+    b.innerHTML = '<span>✅</span><span>Copiato!</span>';
+    setTimeout(() => { b.innerHTML = '<span>📋</span><span>Copia testo negli appunti</span>'; }, 2500);
+  });
+}
+
+// ── SHARE ──
+function shareNarr() {
+  genNarr();
+  const t = $('nout')?.innerText || '';
+  if (!t || t.includes('Compila la scheda')) return;
+  if (navigator.share) {
+    navigator.share({ title: 'Caduta – Referto clinico', text: t }).catch(() => {});
+  } else {
+    cpNarr();
+  }
+}
+
+// ── RESET ──
+function rst() {
+  if (!confirm('Azzerare tutta la scheda?')) return;
+  document.querySelectorAll('.chip').forEach(e => e.classList.remove('on','ron'));
+  document.querySelectorAll('input[type=text],input[type=number],input[type=time],textarea').forEach(e => e.value = '');
+  Object.keys(fqa).forEach(k => delete fqa[k]);
+  document.querySelectorAll('.cfq').forEach(e => e.classList.remove('ok'));
+  const s=$('cscore'); if(s){s.classList.remove('done');s.textContent='Rispondere alle 6 domande per completare il check finale';}
+  $('nout').innerHTML = '<span class="narr-ph">Compila la scheda per generare il testo narrativo clinico...</span>';
+  initDate(); updateProgress();
+}
+
+// ── INIT ──
+function initDate() {
+  const now = new Date(), pad = n => String(n).padStart(2,'0');
+  $('data').value = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+  $('ora').value = pad(now.getHours()) + ':' + pad(now.getMinutes());
+}
+window.onload = () => { initDate(); updateProgress(); };
+</script>
+</body>
+</html>
