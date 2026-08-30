@@ -257,6 +257,105 @@ textarea.ti { resize: none; min-height: 82px; }
 .tc-btn.tc-si { border-color: var(--ar); color: var(--ar); background: var(--ar-soft); }
 .tc-btn.tc-no { border-color: var(--ag); color: var(--ag); background: var(--ag-bg); }
 .tc-btn .tci { font-size: 22px; display: block; margin-bottom: 4px; }
+
+/* ══ TC ALGORITHM ══ */
+.tc-algo { border-radius: 14px; padding: 16px; margin: 14px 0; transition: all .25s; }
+.tc-algo-pending { background: var(--s2); border: 2px dashed var(--border); }
+.tc-algo-si  { background: #fdecea; border: 2px solid var(--ar); }
+.tc-algo-no  { background: #e8f4ee; border: 2px solid var(--ag); }
+.tc-algo-warn{ background: #fdf7e2; border: 2px solid var(--ay); }
+html.dark .tc-algo-pending{ background:var(--s2); border-color:var(--border); }
+html.dark .tc-algo-si  { background:rgba(224,58,74,.12);  border-color:var(--ar); }
+html.dark .tc-algo-no  { background:rgba(40,184,112,.12); border-color:var(--ag); }
+html.dark .tc-algo-warn{ background:rgba(200,160,32,.12); border-color:var(--ay); }
+.tc-verdict-icon  { font-size: 36px; text-align: center; margin-bottom: 8px; }
+.tc-verdict-title { font-size: 18px; font-weight: 800; text-align: center; margin-bottom: 10px; }
+.tc-verdict-title.red    { color: var(--ar); }
+.tc-verdict-title.green  { color: var(--ag); }
+.tc-verdict-title.orange { color: var(--ay); }
+.tc-reason-list { list-style: none; padding: 0; margin: 0; }
+.tc-reason-list li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,.06); font-size: 14px; line-height: 1.4; font-weight: 500; }
+html.dark .tc-reason-list li { border-bottom-color: rgba(255,255,255,.07); }
+.tc-reason-list li:last-child { border-bottom: none; }
+.dr { color: var(--ar); flex-shrink: 0; margin-top: 2px; }
+.dg { color: var(--ag); flex-shrink: 0; margin-top: 2px; }
+.do { color: var(--ay); flex-shrink: 0; margin-top: 2px; }
+.tc-note { margin-top: 10px; padding: 10px 12px; background: rgba(0,0,0,.04); border-radius: 8px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+html.dark .tc-note { background: rgba(255,255,255,.06); }
+.tc-pending-msg { text-align: center; color: var(--dim); font-size: 14px; padding: 8px 0; font-style: italic; }
+.tc-extra { background: var(--s2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 4px; }
+html.dark .tc-extra { background: var(--s2); border-color: var(--border); }
+.tc-override { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+
+/* ══ DARK MODE ══ */
+html.dark {
+  --bg:#0f1117; --surface:#181c27; --s2:#1e2235; --border:#2a2f45;
+  --text:#f0f3fc; --muted:#b0b8d4; --dim:#707898;
+  --ar:#e03a4a; --ar-bg:rgba(224,58,74,.15); --ar-soft:rgba(224,58,74,.08);
+  --ao:#e07828; --ao-bg:rgba(224,120,40,.12);
+  --ay:#c8a020; --ay-bg:rgba(200,160,32,.12);
+  --ag:#28b870; --ag-bg:rgba(40,184,112,.12);
+  --ab:#4a90e8; --ab-bg:rgba(74,144,232,.12);
+  --ap:#8868f0; --ap-bg:rgba(136,104,240,.12);
+  --ok:#28b870;
+}
+html.dark body { background:var(--bg); color:var(--text); }
+html.dark .topbar { background:#0a0d14; border-bottom:1px solid #2a2f45; }
+html.dark .botnav { background:#0a0d14; border-top:1px solid #2a2f45; }
+html.dark .sc { border-color:var(--border); box-shadow:0 2px 12px rgba(0,0,0,.3); }
+html.dark .sc-head { border-bottom-color:var(--border); }
+html.dark .t1 .sc-head{background:rgba(224,58,74,.08)}
+html.dark .t2 .sc-head{background:rgba(224,120,40,.08)}
+html.dark .t3 .sc-head{background:rgba(40,184,112,.08)}
+html.dark .t4 .sc-head{background:rgba(74,144,232,.08)}
+html.dark .t5 .sc-head{background:rgba(136,104,240,.08)}
+html.dark .t6 .sc-head{background:rgba(200,160,32,.08)}
+html.dark .t8 .sc-head{background:rgba(40,184,112,.08)}
+html.dark .t9 .sc-head{background:rgba(74,144,232,.08)}
+html.dark .chip{background:var(--s2);border-color:var(--border);color:var(--muted)}
+html.dark .chip.on{background:rgba(40,184,112,.15);border-color:var(--ok);color:var(--ok)}
+html.dark .chip.ron{background:rgba(74,144,232,.15);border-color:var(--ab);color:var(--ab)}
+html.dark .bx{border-color:var(--dim)}
+html.dark .rd{border-color:var(--dim)}
+html.dark .ti{background:var(--s2);border-color:var(--border);color:var(--text)}
+html.dark .ti:focus{background:#242840}
+html.dark .ti::placeholder{color:var(--dim)}
+html.dark .mf input{background:var(--s2);border-color:var(--border);color:var(--text)}
+html.dark .vb{background:var(--s2);border-color:var(--border)}
+html.dark .vb label{color:var(--muted)}
+html.dark .vb input{border-bottom-color:var(--dim)}
+html.dark .tblock{background:var(--s2);border-color:var(--border)}
+html.dark .prog-wrap{background:var(--surface);border-color:var(--border)}
+html.dark .cscore{background:var(--surface);border-color:var(--border)}
+html.dark .cscore.done{background:rgba(40,184,112,.12);border-color:rgba(40,184,112,.3)}
+html.dark .cfq{background:var(--surface);border-color:var(--border)}
+html.dark .cfq.ok{background:rgba(40,184,112,.08);border-left-color:var(--ok)}
+html.dark .mcard{background:var(--surface);border-color:var(--border)}
+html.dark .rfc{background:rgba(224,58,74,.08);border-color:rgba(224,58,74,.25)}
+html.dark .rfi{border-bottom-color:rgba(224,58,74,.2);color:#f0a0a8}
+html.dark .nbox{background:var(--surface);border-color:var(--border)}
+html.dark .btn-share{background:var(--s2);border-color:var(--ab);color:var(--ab)}
+html.dark .btn-rst{background:transparent;border-color:var(--border);color:var(--dim)}
+html.dark .tc-btn{background:var(--s2);border-color:var(--border);color:var(--muted)}
+html.dark .tc-btn.tc-si{background:rgba(224,58,74,.15);border-color:var(--ar);color:var(--ar)}
+html.dark .tc-btn.tc-no{background:rgba(40,184,112,.15);border-color:var(--ag);color:var(--ag)}
+html.dark .firma{border-color:var(--border)}
+html.dark .firma input{color:var(--text);border-bottom-color:var(--border)}
+html.dark .sep{border-top-color:var(--border)}
+html.dark .sub-label{border-bottom-color:var(--border)}
+html.dark .pbar{background:var(--border)}
+html.dark .pfill{background:linear-gradient(90deg,var(--ag),#34d470)}
+html.dark .tc-algo-pending{background:var(--s2);border-color:var(--border)}
+html.dark .tc-algo-si{background:rgba(224,58,74,.12);border-color:var(--ar)}
+html.dark .tc-algo-no{background:rgba(40,184,112,.12);border-color:var(--ag)}
+html.dark .tc-algo-warn{background:rgba(200,160,32,.12);border-color:var(--ay)}
+html.dark .tc-reason-list li{border-bottom-color:rgba(255,255,255,.07)}
+html.dark .tc-note{background:rgba(255,255,255,.06)}
+html.dark .tc-extra{background:var(--s2);border-color:var(--border)}
+html.dark .tc-override{border-top-color:var(--border)}
+html.dark .prog-pill{background:var(--ar)}
+
 </style>
 </head>
 <body>
@@ -271,6 +370,7 @@ textarea.ti { resize: none; min-height: 82px; }
     </div>
   </div>
   <div class="prog-pill" id="ppill">0 / 9</div>
+  <button id="theme-btn" onclick="toggleTheme()" style="background:rgba(255,255,255,0.12);border:none;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;flex-shrink:0;margin-left:8px;-webkit-tap-highlight-color:transparent;">☀️</button>
 </div>
 
 <!-- SCREENS -->
@@ -561,31 +661,58 @@ textarea.ti { resize: none; min-height: 82px; }
         <input type="text" class="ti" id="ipo-a" placeholder="Altro..." oninput="gen()">
       </div>
       <hr class="sep">
-      <div class="sub-label">Decisione TC cranio</div>
-      <div class="tc-dec">
-        <div class="tc-btn" id="tc-si-btn" onclick="tcDec('si')"><span class="tci">🔴</span>TC URGENTE<br>richiesta</div>
-        <div class="tc-btn" id="tc-no-btn" onclick="tcDec('no')"><span class="tci">🟢</span>TC NON<br>indicata</div>
-      </div>
-      <div id="tc-si-block" style="display:none">
-        <div class="fl" style="margin-bottom:8px">Indicazioni</div>
-        <div class="chips col" id="tci">
-          <div class="chip" data-v="trauma cranico riferito / sospetto" onclick="ck(this)"><div class="bx"></div>Trauma cranico riferito / sospetto</div>
-          <div class="chip" data-v="perdita di coscienza" onclick="ck(this)"><div class="bx"></div>Perdita di coscienza</div>
-          <div class="chip" data-v="deficit neurologici" onclick="ck(this)"><div class="bx"></div>Deficit neurologici</div>
-          <div class="chip" data-v="anticoagulazione / antiaggregazione" onclick="ck(this)"><div class="bx"></div>Anticoag. / antiaggregazione</div>
-          <div class="chip" data-v="età >65 aa, meccanismo non chiaro" onclick="ck(this)"><div class="bx"></div>Età >65 aa, meccanismo non chiaro</div>
+      <div class="sub-label">🧠 Algoritmo TC Cranio</div>
+
+      <!-- CAMPI AGGIUNTIVI PER L'ALGORITMO -->
+      <div class="tc-extra">
+        <div class="sst" style="color:var(--ab)">Dati aggiuntivi per la raccomandazione</div>
+        <div class="fg">
+          <div class="fl">Segni obiettivi trauma al capo / viso</div>
+          <div class="chips" id="tc-segni">
+            <div class="chip" data-v="si" onclick="rd(this);calcTC()"><div class="rd"></div>Presenti</div>
+            <div class="chip" data-v="no" onclick="rd(this);calcTC()"><div class="rd"></div>Assenti</div>
+          </div>
         </div>
-        <textarea class="ti" id="tci-m" placeholder="Motivazione aggiuntiva..." oninput="gen()"></textarea>
-      </div>
-      <div id="tc-no-block" style="display:none">
-        <div class="fl" style="margin-bottom:8px">Motivo non indicazione</div>
-        <div class="chips col" id="tcn">
-          <div class="chip" data-v="trauma cranico negato" onclick="ck(this)"><div class="bx"></div>Trauma cranico negato</div>
-          <div class="chip" data-v="GCS 15, neurologico negativo" onclick="ck(this)"><div class="bx"></div>GCS 15, neurologico negativo</div>
-          <div class="chip" data-v="assenza segni traumatici al capo" onclick="ck(this)"><div class="bx"></div>Assenza segni traumatici al capo</div>
-          <div class="chip" data-v="meccanismo a basso rischio" onclick="ck(this)"><div class="bx"></div>Meccanismo a basso rischio</div>
+        <div class="fg">
+          <div class="fl">Anticoagulazione / antiaggregazione</div>
+          <div class="chips" id="tc-anticoag">
+            <div class="chip" data-v="VKA (warfarin)" onclick="rd(this);calcTC()"><div class="rd"></div>VKA</div>
+            <div class="chip" data-v="DOAC" onclick="rd(this);calcTC()"><div class="rd"></div>DOAC</div>
+            <div class="chip" data-v="eparina / EBPM" onclick="rd(this);calcTC()"><div class="rd"></div>Eparina</div>
+            <div class="chip" data-v="antiaggregante" onclick="rd(this);calcTC()"><div class="rd"></div>Antiaggr.</div>
+            <div class="chip" data-v="no" onclick="rd(this);calcTC()"><div class="rd"></div>No</div>
+          </div>
         </div>
-        <textarea class="ti" id="tcn-m" placeholder="Motivazione..." oninput="gen()"></textarea>
+        <div class="fg">
+          <div class="fl">Amnesia dell'evento</div>
+          <div class="chips" id="tc-amnesia">
+            <div class="chip" data-v="si" onclick="rd(this);calcTC()"><div class="rd"></div>Sì</div>
+            <div class="chip" data-v="no" onclick="rd(this);calcTC()"><div class="rd"></div>No</div>
+            <div class="chip" data-v="non valutabile" onclick="rd(this);calcTC()"><div class="rd"></div>Non val.</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="fl">Cefalea intensa post-caduta</div>
+          <div class="chips" id="tc-cefalea">
+            <div class="chip" data-v="si" onclick="rd(this);calcTC()"><div class="rd"></div>Sì</div>
+            <div class="chip" data-v="no" onclick="rd(this);calcTC()"><div class="rd"></div>No</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VERDETTO ALGORITMO -->
+      <div id="tc-verdict" class="tc-algo tc-algo-pending">
+        <div class="tc-pending-msg">⬆ Compila i campi per ricevere la raccomandazione TC</div>
+      </div>
+
+      <!-- OVERRIDE CLINICO -->
+      <div class="tc-override">
+        <div class="fl" style="margin-bottom:8px">Decisione clinica finale</div>
+        <div class="tc-dec">
+          <div class="tc-btn" id="tc-si-btn" onclick="tcDec('si')"><span class="tci">🔴</span>TC URGENTE<br>richiesta</div>
+          <div class="tc-btn" id="tc-no-btn" onclick="tcDec('no')"><span class="tci">🟢</span>TC NON<br>indicata</div>
+        </div>
+        <textarea class="ti" id="tci-m" placeholder="Motivazione / note cliniche..." style="margin-top:8px" oninput="gen()"></textarea>
       </div>
       <hr class="sep">
       <div class="fg">
@@ -787,12 +914,12 @@ function goTo(n){
 }
 
 // checkbox
-function ck(el){ el.classList.toggle('on'); gen(); }
+function ck(el){ el.classList.toggle('on'); gen(); calcTC(); }
 
 // radio
 function rd(el){
   el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('ron'));
-  el.classList.add('ron'); gen();
+  el.classList.add('ron'); gen(); calcTC();
 }
 
 // TC decision
@@ -801,9 +928,167 @@ function tcDec(s){
   tcState=s;
   $('tc-si-btn').classList.toggle('tc-si', s==='si');
   $('tc-no-btn').classList.toggle('tc-no', s==='no');
-  $('tc-si-block').style.display = s==='si'?'block':'none';
-  $('tc-no-block').style.display = s==='no'?'block':'none';
   gen();
+}
+
+
+// ══ ALGORITMO TC CRANIO ══
+function calcTC(){
+  const verd = $('tc-verdict');
+  if(!verd) return;
+
+  // Dati dalle sezioni precedenti
+  const pdcSel   = selected('pdc');
+  const tcdSel   = selected('tcd');
+  const gcsSel   = document.querySelector('#gcs .chip.ron');
+  const defSel   = selected('deficit');
+  const lingVal  = selected('ling');
+  const tonfoSel = selected('tonfo');
+  const modItems = checked('mod');
+
+  // Campi specifici S6
+  const segniEl    = document.querySelector('#tc-segni .chip.ron');
+  const anticoagEl = document.querySelector('#tc-anticoag .chip.ron');
+  const amnesiaEl  = document.querySelector('#tc-amnesia .chip.ron');
+  const cefaleaEl  = document.querySelector('#tc-cefalea .chip.ron');
+
+  // Capo/collo da S5 (generato dinamicamente con id tr-capo-/-collo)
+  const capoEl = document.querySelector('#tc-segni') ? null :
+    document.querySelector('[id="tr-capo-/-collo"] .chip.on[data-v*="dolorabile"]');
+
+  // Numero campi chiave compilati
+  const filled = [pdcSel, tcdSel, gcsSel, anticoagEl, segniEl].filter(Boolean).length;
+  if(filled < 2){
+    verd.className = 'tc-algo tc-algo-pending';
+    verd.innerHTML = '<div class="tc-pending-msg">⬆ Compila i campi per ricevere la raccomandazione TC</div>';
+    return;
+  }
+
+  const SI=[], NO=[], WARN=[];
+
+  // 1. Trauma cranico
+  if(tcdSel && (tcdSel.includes('possibile') || tcdSel.includes('non escludibile'))){
+    SI.push('Trauma cranico <b>' + tcdSel + '</b> per anamnesi');
+  } else if(tcdSel && tcdSel.includes('negato')){
+    NO.push('Trauma cranico escluso per anamnesi');
+  }
+  if(segniEl && segniEl.dataset.v === 'si'){
+    SI.push('Segni obiettivi di trauma al capo o al viso');
+  } else if(segniEl && segniEl.dataset.v === 'no'){
+    NO.push('Nessun segno obiettivo di trauma al capo o al viso');
+  }
+  // Legge anche capo/collo da S5
+  const capoDolorabile = document.querySelector('[id="tr-capo-/-collo"] .chip.on[data-v*="dolorabile"]');
+  if(capoDolorabile){
+    SI.push("Capo / collo dolorabile all'esame obiettivo (S5)");
+  }
+
+  // 2. Perdita di coscienza
+  if(pdcSel === 'riferita'){
+    SI.push('Perdita di coscienza riferita');
+  } else if(pdcSel === 'negata'){
+    NO.push('Perdita di coscienza negata');
+  } else if(pdcSel === 'non valutabile'){
+    WARN.push('Perdita di coscienza non valutabile');
+  }
+
+  // 3. GCS (solo se aggiunge info non gia data da PDC)
+  if(gcsSel){
+    const gv = gcsSel.dataset.v || '';
+    if(gv !== 'vigile (GCS 15)'){
+      if(!SI.some(r => r.includes('coscienza'))){
+        SI.push('Alterazione stato di coscienza (' + gv + ')');
+      }
+    } else {
+      NO.push('GCS 15, vigile e orientato');
+    }
+  }
+
+  // 4. Deficit neurologici focali
+  if(defSel === 'presenti'){
+    SI.push('Deficit neurologici focali nuovi');
+  } else if(defSel === 'assenti'){
+    NO.push('Nessun deficit neurologico focale');
+  }
+  // Linguaggio solo se non gia coperto da deficit
+  if(lingVal && lingVal !== 'normale' && defSel !== 'presenti'){
+    SI.push('Linguaggio ' + lingVal + ' (nuovo segno neurologico)');
+  }
+
+  // 5. Amnesia
+  if(amnesiaEl){
+    if(amnesiaEl.dataset.v === 'si'){
+      SI.push("Amnesia dell'evento riferita");
+    } else if(amnesiaEl.dataset.v === 'non valutabile'){
+      WARN.push("Amnesia dell'evento non valutabile");
+    }
+  }
+
+  // 6. Cefalea intensa
+  if(cefaleaEl && cefaleaEl.dataset.v === 'si'){
+    SI.push('Cefalea intensa post-caduta');
+  }
+
+  // 7. Modalita caduta (letta da S2)
+  if(modItems.includes('caduta da altezza')){
+    SI.push('Caduta da altezza: meccanismo ad alto rischio');
+  } else if(modItems.includes('caduta improvvisa')){
+    WARN.push('Caduta improvvisa: meccanismo compatibile con trauma cranico');
+  } else if(modItems.includes('accasciamento controllato')){
+    NO.push('Accasciamento controllato: basso rischio di trauma cranico');
+  }
+
+  // 8. Dinamica non testimoniata (tonfo non noto)
+  //    Solo se NON ci sono gia 2+ elementi rassicuranti
+  if(tonfoSel === 'non noto' && NO.length < 2){
+    WARN.push('Dinamica non testimoniata: non escludibile trauma cranico');
+  }
+
+  // 9. Anticoagulazione — NICE 2023
+  const isAnticoag = anticoagEl && anticoagEl.dataset.v !== 'no';
+  if(isAnticoag){
+    const drug = anticoagEl.dataset.v;
+    if(SI.length > 0){
+      SI.push('In terapia con ' + drug + ': rinforza ulteriormente l\'indicazione');
+    } else if(WARN.length > 0){
+      WARN.push('In terapia con ' + drug + ' con elementi di incertezza: considerare TC entro 8h (NICE 2023)');
+    } else {
+      WARN.push('In terapia con ' + drug + ', tutti i criteri clinici negativi: valutazione individuale (NICE 2023)');
+    }
+  } else if(anticoagEl && anticoagEl.dataset.v === 'no'){
+    NO.push('Assenza di anticoagulazione e antiaggregazione');
+  }
+
+  // VERDETTO
+  let cls, icon, titleCls, title, note;
+  if(SI.length > 0){
+    cls='si'; icon='🔴'; titleCls='red';
+    title='TC CRANIO INDICATA';
+    note='Richiedere TC cranio senza MDC con priorita urgente. Se anticoagulato: valutare sospensione/bridging.';
+  } else if(WARN.length > 0){
+    cls='warn'; icon='🟡'; titleCls='orange';
+    title='VALUTAZIONE CLINICA NECESSARIA';
+    note='Non ci sono criteri assoluti ma esistono elementi di incertezza. La decisione e clinica: considera il quadro complessivo e la tendenza evolutiva.';
+  } else if(NO.length >= 2){
+    cls='no'; icon='🟢'; titleCls='green';
+    title='TC NON INDICATA';
+    note='Criteri clinici rassicuranti. Impostare monitoraggio neurologico e rivalutare se compaiono nuovi segni (cefalea, sonnolenza, vomito, deficit).';
+  } else {
+    verd.className = 'tc-algo tc-algo-pending';
+    verd.innerHTML = '<div class="tc-pending-msg">Compila altri campi per una raccomandazione affidabile</div>';
+    return;
+  }
+
+  const liSI   = SI.map(r=>'<li><span class="dr">●</span><span>'+r+'</span></li>').join('');
+  const liWARN = WARN.map(r=>'<li><span class="do">●</span><span>'+r+'</span></li>').join('');
+  const liNO   = NO.map(r=>'<li><span class="dg">●</span><span>'+r+'</span></li>').join('');
+
+  verd.className = 'tc-algo tc-algo-' + cls;
+  verd.innerHTML =
+    '<div class="tc-verdict-icon">'+icon+'</div>'+
+    '<div class="tc-verdict-title '+titleCls+'">'+title+'</div>'+
+    '<ul class="tc-reason-list">'+liSI+liWARN+liNO+'</ul>'+
+    '<div class="tc-note">'+note+'</div>';
 }
 
 // final check
@@ -1041,7 +1326,25 @@ function initDate(){
   $('data').value=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate());
   $('ora').value=p(n.getHours())+':'+p(n.getMinutes());
 }
-window.onload=()=>{initDate();upd();};
+
+function toggleTheme(){
+  const isDark = document.documentElement.classList.toggle('dark');
+  const b = document.getElementById('theme-btn');
+  if(b) b.textContent = isDark ? '🌙' : '☀️';
+  try{ localStorage.setItem('caduta-theme', isDark?'dark':'light'); }catch(e){}
+}
+function initTheme(){
+  try{
+    const s = localStorage.getItem('caduta-theme');
+    const sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if(s === 'dark' || (s === null && sys)){
+      document.documentElement.classList.add('dark');
+      const b = document.getElementById('theme-btn');
+      if(b) b.textContent = '🌙';
+    }
+  }catch(e){}
+}
+window.onload=()=>{initTheme();initDate();upd();calcTC();};
 </script>
 </body>
 </html>
