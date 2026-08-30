@@ -67,6 +67,7 @@ html, body { height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; b
   border: none; background: none; color: rgba(255,255,255,.4);
   font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
   cursor: pointer; transition: color .15s; padding: 8px 0;
+  position: relative;
 }
 .nbtn .ico { font-size: 22px; line-height: 1; transition: transform .15s; }
 .nbtn.on { color: #fff; }
@@ -889,7 +890,7 @@ html.dark .prog-pill{background:var(--ar)}
     <div class="nbtn-bar"></div><span class="ico">📋</span>Scheda
   </button>
   <button class="nbtn" id="nav-narr" onclick="goTo('narr')">
-    <div class="nbtn-bar"></div><span class="ico">📝</span>Testo
+    <div class="nbtn-bar"></div><span class="ico">🗒</span>Testo
   </button>
   <button class="nbtn" id="nav-check" onclick="goTo('check')">
     <div class="nbtn-bar"></div><span class="ico">✅</span>Check
@@ -1138,143 +1139,208 @@ function upd(){
 function gen(){ upd(); if(cur==='narr') genNarr(); }
 
 function genNarr(){
-  const parts=[];
-  const pz=val('paziente'),rp=val('reparto'),dt=val('data'),or=val('ora'),och=val('ora-ch');
+  const frasi=[];
+  const pz=val('paziente'),or=val('ora'),och=val('ora-ch');
 
+  // ── Paragrafo 1: attivazione ─────────────────────────
+  const p1=[];
   let intro='Alle ore '+(or||'--:--');
-  if(och&&och!==or) intro+=' (chiamato alle '+och+')';
-  intro+=', il medico viene chiamato per caduta del paziente';
-  intro+=pz?' '+pz:' [NOME]';
-  if(rp) intro+=' (reparto: '+rp+')';
-  if(dt){const d=dt.split('-');intro+=', in data '+d[2]+'/'+d[1]+'/'+d[0];}
-  parts.push(intro+'.');
+  if(och&&och!==or) intro+=' (chiamato alle ore '+och+')';
+  intro+=' vengo chiamato per la caduta del paziente '+(pz||'[NOME]')+'.';
+  p1.push(intro);
 
   const seg=checked('seg'),segA=val('seg-a');
-  if(seg.length||segA) parts.push('Segnalata da: '+[...seg,segA].filter(Boolean).join(', ')+'.');
+  const segAll=[...seg,segA].filter(Boolean);
+  if(segAll.length) p1.push('La caduta mi viene segnalata da '+segAll.join(' e ')+'.');
 
   const tonfo=selected('tonfo');
-  if(tonfo) parts.push('Tonfo udito: '+tonfo+'.');
+  if(tonfo==='si') p1.push('Riferito tonfo udito.');
+  else if(tonfo==='no') p1.push('Nessun tonfo udito.');
+  else if(tonfo==='non noto') p1.push('Non è noto se sia stato udito un tonfo.');
 
   const trov=selected('trovato'),trovA=val('trovato-a');
-  if(trov||trovA) parts.push('Paziente trovato: '+(trov||trovA)+'.');
+  if(trov||trovA) p1.push('Trovo il paziente '+(trov||trovA)+'.');
 
   const stato=checked('stato');
-  if(stato.length) parts.push("All'arrivo: "+stato.join(', ')+'.');
+  if(stato.length) p1.push('Lo trovo '+stato.join(', ')+'.');
 
   const din=checked('din'),dinA=val('din-a');
-  if(din.length||dinA) parts.push('Dinamica riferita: '+[...din,dinA].filter(Boolean).join('; ')+'.');
+  const dinAll=[...din,dinA].filter(Boolean);
+  if(dinAll.length) p1.push('Dalla ricostruzione della dinamica risulta che il paziente '+dinAll.join('; ')+'.');
 
+  if(p1.length) frasi.push(p1.join(' '));
+
+  // ── Paragrafo 2: anamnesi evento ─────────────────────
+  const p2=[];
   const sint=checked('sint'),sintA=val('sint-a');
-  if(sint.length||sintA){
-    const a=[...sint,sintA].filter(Boolean);
-    parts.push(a.length===1&&a[0].includes('nessun')?'Nessun sintomo pre-evento riferito.':'Sintomi pre-evento: '+a.join(', ')+'.');
+  const sintAll=[...sint,sintA].filter(Boolean);
+  if(sintAll.length){
+    if(sintAll.length===1&&sintAll[0].includes('nessun'))
+      p2.push('Il paziente nega sintomi prima della caduta.');
+    else
+      p2.push('Prima della caduta il paziente riferisce: '+sintAll.join(', ')+'.');
   }
   const mod=checked('mod'),modA=val('mod-a');
-  if(mod.length||modA) parts.push('Modalità: '+[...mod,modA].filter(Boolean).join('; ')+'.');
+  const modAll=[...mod,modA].filter(Boolean);
+  if(modAll.length) p2.push('La modalità della caduta è descrivibile come '+modAll.join(', ')+'.');
 
-  const pdc=selected('pdc'); if(pdc) parts.push('Perdita di coscienza: '+pdc+'.');
-  const tcd=selected('tcd'); if(tcd) parts.push('Trauma cranico (anamnestico): '+tcd+'.');
-  const nd=val('note-din'); if(nd) parts.push('Note dinamica: '+nd+'.');
+  const pdc=selected('pdc');
+  if(pdc==='riferita') p2.push('Viene riferita perdita di coscienza.');
+  else if(pdc==='negata') p2.push('La perdita di coscienza viene negata.');
+  else if(pdc==='non valutabile') p2.push('La perdita di coscienza non è valutabile.');
 
-  // vitali
-  const p1=val('pa1'),p2=val('pa2'),fc=val('fc'),sp=val('spo2'),tp=val('temp'),fr=val('fr'),gl=val('glic');
+  const tcd=selected('tcd');
+  if(tcd) p2.push('Il trauma cranico viene riferito come '+tcd+'.');
+
+  const nd=val('note-din');
+  if(nd) p2.push(nd);
+
+  if(p2.length) frasi.push(p2.join(' '));
+
+  // ── Paragrafo 3: parametri vitali ────────────────────
+  const p3=[];
+  const p1v=val('pa1'),p2v=val('pa2'),fc=val('fc'),sp=val('spo2'),tp=val('temp'),fr=val('fr'),gl=val('glic');
   const vit=[];
-  if(p1&&p2) vit.push('PA '+p1+'/'+p2+' mmHg');
+  if(p1v&&p2v) vit.push('PA '+p1v+'/'+p2v+' mmHg');
   if(fc) vit.push('FC '+fc+' bpm');
   if(sp) vit.push('SpO₂ '+sp+'%');
   if(tp) vit.push('TC '+tp+' °C');
   if(fr) vit.push('FR '+fr+' atti/min');
   if(gl) vit.push('glicemia '+gl+' mg/dL');
-  if(vit.length) parts.push('Parametri vitali: '+vit.join(', ')+'.');
-  const ar=val('altri-ril'); if(ar) parts.push('Altri rilievi: '+ar+'.');
+  if(vit.length) p3.push('Rilevo i seguenti parametri vitali: '+vit.join(', ')+'.');
+  const ar=val('altri-ril'); if(ar) p3.push(ar+'.');
+  if(p3.length) frasi.push(p3.join(' '));
 
-  // neurologico
+  // ── Paragrafo 4: esame neurologico ───────────────────
+  const p4=[];
   const gcsSel=$('gcs')?$('gcs').querySelector('.chip.ron'):null;
   if(gcsSel){
-    const gv=gcsSel.dataset.v;
+    const gv=gcsSel.dataset.v||'';
     const gc=val('gcs-c'),gs=val('gcs-s'),gi=val('gcs-i');
     let gt=gv;
     if(gv==='confuso'&&gc) gt='confuso (GCS '+gc+')';
     if(gv==='soporoso'&&gs) gt='soporoso (GCS '+gs+')';
     if(gv==='incosciente'&&gi) gt='incosciente (GCS '+gi+')';
-    parts.push('Coscienza: '+gt+'.');
+    p4.push('Il paziente si presenta '+gt+'.');
   }
-  const ling=selected('ling'); if(ling) parts.push('Linguaggio: '+ling+'.');
-  const def=selected('deficit'),defA=val('deficit-a');
-  if(def) parts.push('Deficit focali: '+[def,defA].filter(Boolean).join(' — ')+'.');
-  const ep=checked('epil');
-  if(ep.length) parts.push('Segni crisi epilettica: '+(ep.includes('assenti')?'assenti.':ep.join(', ')+'.'));
+  const ling=selected('ling');
+  if(ling==='normale') p4.push('Il linguaggio è nella norma.');
+  else if(ling) p4.push('Riscontro linguaggio '+ling+'.');
 
-  // trauma
+  const def=selected('deficit'),defA=val('deficit-a');
+  if(def==='assenti') p4.push('Non rilevo deficit neurologici focali.');
+  else if(def==='presenti') p4.push('Sono presenti deficit neurologici focali'+(defA?' ('+defA+')':'')+'.');
+
+  const ep=checked('epil');
+  if(ep.length&&!ep.includes('assenti')) p4.push('Presenti segni indiretti di crisi epilettica: '+ep.join(', ')+'.');
+  else if(ep.includes('assenti')) p4.push('Nessun segno indiretto di crisi epilettica.');
+
+  if(p4.length) frasi.push(p4.join(' '));
+
+  // ── Paragrafo 5: obiettività trauma ──────────────────
+  const p5=[];
   const trP=[];
   tR.forEach(r=>{
     const k='tr-'+r.toLowerCase().replace(/\s*\/\s*/g,'-').replace(/\s+/g,'-');
     const ck2=checked(k);
     const nt=val('tr-n-'+k);
-    if(ck2.length||nt) trP.push([...ck2,nt?'('+nt+')':''].filter(Boolean).join(', '));
+    if(ck2.length||nt) trP.push(r+': '+[...ck2,nt?'('+nt+')':''].filter(Boolean).join(', '));
   });
-  if(trP.length) parts.push('Rachide / capo: '+trP.join('; ')+'.');
+  if(trP.length) p5.push('Esame del rachide e del capo: '+trP.join('; ')+'.');
 
-  const tor=checked('torace'); if(tor.length) parts.push('Torace: '+tor.join(', ')+'.');
-  const add=checked('addome'); if(add.length) parts.push('Addome: '+add.join(', ')+'.');
-  const bac=checked('bacino'); if(bac.length) parts.push('Bacino: '+bac.join(', ')+'.');
-  const as2=checked('as'); if(as2.length) parts.push(as2.join(', ')+'.');
-  const ai2=checked('ai'); if(ai2.length) parts.push(ai2.join(', ')+'.');
+  const segOb=[];
+  const tor=checked('torace'); if(tor.length) segOb.push('torace '+tor.join(', '));
+  const add=checked('addome'); if(add.length) segOb.push('addome '+add.join(', '));
+  const bac=checked('bacino'); if(bac.length) segOb.push('bacino '+bac.join(', '));
+  const as2=checked('as'); if(as2.length) segOb.push(as2.join(', '));
+  const ai2=checked('ai'); if(ai2.length) segOb.push(ai2.join(', '));
+  if(segOb.length) p5.push('Obiettività somatica: '+segOb.join('; ')+'.');
+
   const dm=selected('dmob'),dmA=val('dmob-a');
-  if(dm) parts.push('Dolore mobilizzazione: '+[dm,dmA].filter(Boolean).join(' — ')+'.');
-  const lc=selected('lcut'),lcA=val('lcut-a');
-  if(lc) parts.push('Cute: '+[lc,lcA].filter(Boolean).join(' — ')+'.');
-  const lp=selected('lpreg'),lpA=val('lpreg-a');
-  if(lp) parts.push('Lesioni pregresse: '+[lp,lpA].filter(Boolean).join(' — ')+'.');
+  if(dm==='dolore alla mobilizzazione: assente') p5.push('Nessun dolore alla mobilizzazione.');
+  else if(dm==='dolore alla mobilizzazione: presente') p5.push('Dolore alla mobilizzazione'+(dmA?' in sede '+dmA:'')+'.');
 
-  // valutazione + imaging
+  const lc=selected('lcut'),lcA=val('lcut-a');
+  if(lc==='assenza nuove lesioni cutanee') p5.push('Non rilevo nuove lesioni cutanee.');
+  else if(lc==='nuove lesioni cutanee presenti') p5.push('Presenti nuove lesioni cutanee'+(lcA?': '+lcA:'')+'.');
+
+  const lp=selected('lpreg'),lpA=val('lpreg-a');
+  if(lp==='assenza lesioni pregresse') p5.push('Nessuna lesione cutanea pregressa nota.');
+  else if(lp==='lesioni pregresse presenti') p5.push('Presenti lesioni/ecchimosi pregresse note'+(lpA?', sede: '+lpA:'')+'.');
+
+  if(p5.length) frasi.push(p5.join(' '));
+
+  // ── Paragrafo 6: valutazione e decisioni ─────────────
+  const p6=[];
   const qua=checked('quadro'),quaA=val('quadro-a');
-  if(qua.length||quaA) parts.push('Valutazione clinica: '+[...qua,quaA].filter(Boolean).join('; ')+'.');
+  const quaAll=[...qua,quaA].filter(Boolean);
+  if(quaAll.length) p6.push('La valutazione clinica è '+quaAll.join('; ')+'.');
+
   const ipo=checked('ipo'),ipoA=val('ipo-a');
-  if(ipo.length||ipoA) parts.push('Ipotesi causale: '+[...ipo,ipoA].filter(Boolean).join(', ')+'.');
+  const ipoAll=[...ipo,ipoA].filter(Boolean);
+  if(ipoAll.length) p6.push("L'ipotesi causale più probabile è "+ipoAll.join(', ')+'.');
 
   if(tcState==='si'){
-    let s='TC CRANIO URGENTE RICHIESTA';
-    const ind=checked('tci'),m=val('tci-m');
-    if(ind.length) s+=' per: '+ind.join(', ');
-    if(m) s+='. '+m;
-    parts.push(s+'.');
+    let s='Richiedo TC cranio urgente';
+    const m=val('tci-m');
+    if(m) s+=': '+m;
+    p6.push(s+'.');
   } else if(tcState==='no'){
-    let s='TC cranio non indicata al momento';
-    const mot=checked('tcn'),m=val('tcn-m');
-    if(mot.length) s+=' ('+mot.join(', ')+')';
-    if(m) s+='. '+m;
-    parts.push(s+'. Si imposta monitoraggio.');
+    let s='Non ritengo indicata la TC cranio al momento';
+    const m=val('tcn-m');
+    if(m) s+=': '+m;
+    p6.push(s+'. Imposto monitoraggio.');
   }
 
   const esa=checked('esa'),rx=val('rx');
-  if(esa.length||rx){
-    const acc=[...esa,rx?'Rx '+rx:''].filter(Boolean);
-    parts.push('Accertamenti: '+acc.join(', ')+'.');
-  }
+  const esaAll=[...esa,rx?'Rx '+rx:''].filter(Boolean);
+  if(esaAll.length) p6.push('Richiedo i seguenti accertamenti: '+esaAll.join(', ')+'.');
 
-  const ter=checked('ter'),terA=val('ter-a'),altT=val('alt-ter'),cons=val('cons');
-  const tp2=[...ter,terA,altT].filter(Boolean);
-  if(tp2.length) parts.push('Terapia: '+tp2.join('; ')+'.');
-  if(cons) parts.push('Consulenze: '+cons+'.');
+  if(p6.length) frasi.push(p6.join(' '));
+
+  // ── Paragrafo 7: terapia e piano ─────────────────────
+  const p7=[];
+  const ter=checked('ter'),terA=val('ter-a'),altT=val('alt-ter');
+  const terAll=[...ter,terA,altT].filter(Boolean);
+  if(terAll.length) p7.push('Dispongo: '+terAll.join('; ')+'.');
+
+  const cons=val('cons');
+  if(cons) p7.push('Richiedo consulenza a: '+cons+'.');
 
   const mv=selected('mvit'),mn=selected('mneo');
-  const pln=[mv,mn].filter(Boolean);
-  if(pln.length) parts.push('Monitoraggio: '+pln.join('; ')+'.');
+  const mon=[];
+  if(mv) mon.push('parametri vitali '+mv);
+  if(mn) mon.push('stato neurologico '+mn);
+  if(mon.length) p7.push('Imposto monitoraggio: '+mon.join('; ')+'.');
+
   const rh=val('riv-h'),rc=val('riv-c');
   if(rh||rc){
-    let rv='Rivalutazione';
+    let rv='Mi ripropongo di rivalutare il paziente';
     if(rh) rv+=' entro le ore '+rh;
-    if(rc) rv+='; anticipare se: '+rc;
-    parts.push(rv+'.');
+    if(rc) rv+='; anticiperò la valutazione se '+rc;
+    p7.push(rv+'.');
   }
-  const al=checked('all'); if(al.length) parts.push('Segnalare urgentemente se: '+al.join(', ')+'.');
-  const np=val('np'); if(np) parts.push('Note: '+np+'.');
-  const com=checked('com'); if(com.length) parts.push('Comunicazioni: '+com.join('; ')+'.');
 
+  const al=checked('all');
+  if(al.length) p7.push('Lascio indicazione al personale di allertarmi urgentemente in caso di: '+al.join(', ')+'.');
+
+  const np=val('np');
+  if(np) p7.push(np);
+
+  if(p7.length) frasi.push(p7.join(' '));
+
+  // ── Paragrafo 8: comunicazioni ───────────────────────
+  const p8=[];
+  const com=checked('com');
+  if(com.length) p8.push('Comunico: '+com.join('; ')+'.');
+  if(p8.length) frasi.push(p8.join(' '));
+
+  // ── Render ───────────────────────────────────────────
   const el=$('nout');
-  const ok=parts.length>1||pz||rp||och;
-  el.innerHTML=ok?parts.join('\n\n'):'<span class="nph">Compila la scheda → il testo clinico appare qui automaticamente.</span>';
+  const ok=frasi.length>0||pz||och;
+  el.innerHTML=ok
+    ? frasi.join('\n')
+    : '<span class="nph">Compila la scheda → il testo clinico appare qui automaticamente.</span>';
 }
 
 function cpNarr(){
