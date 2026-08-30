@@ -291,7 +291,7 @@ html.dark .tc-extra { background: var(--s2); border-color: var(--border); }
 
 /* ══ DARK MODE ══ */
 html.dark {
-  --bg:#0f1117; --surface:#181c27; --s2:#1e2235; --border:#2a2f45;
+  --bg:#242a3c; --surface:#181c27; --s2:#1e2235; --border:#2a2f45;
   --text:#f0f3fc; --muted:#b0b8d4; --dim:#707898;
   --ar:#e03a4a; --ar-bg:rgba(224,58,74,.15); --ar-soft:rgba(224,58,74,.08);
   --ao:#e07828; --ao-bg:rgba(224,120,40,.12);
@@ -384,16 +384,14 @@ html.dark .prog-pill{background:var(--ar)}
 
   <!-- DATI -->
   <div class="sc">
-    <div class="sc-head" style="background:#f0f4fc">
+    <div class="sc-head" style="background:var(--ab-bg,rgba(74,144,232,.08))">
       <span style="font-size:20px">📋</span>
       <span class="stitle" style="color:var(--ab)">Dati Scheda</span>
     </div>
     <div class="sc-body">
       <div class="mgrid">
-        <div class="mf"><label>Data</label><input type="date" id="data" oninput="gen()"></div>
         <div class="mf"><label>Ora intervento</label><input type="time" id="ora" oninput="gen()"></div>
         <div class="mf"><label>Paziente</label><input type="text" id="paziente" placeholder="Cognome Nome" oninput="gen()"></div>
-        <div class="mf"><label>Reparto</label><input type="text" id="reparto" placeholder="es. Geriatria" oninput="gen()"></div>
       </div>
     </div>
   </div>
@@ -796,7 +794,7 @@ html.dark .prog-pill{background:var(--ar)}
 
   <!-- S9 COMUNICAZIONI -->
   <div class="sc" style="border-color:var(--ao-bg)">
-    <div class="sc-head" style="background:#fdf6f0">
+    <div class="sc-head" style="background:var(--ao-bg,rgba(224,120,40,.08))">
       <div class="snum" style="background:var(--ao-bg);color:var(--ao)">9</div>
       <div class="stitle" style="color:var(--ao)">Comunicazioni</div>
     </div>
@@ -1124,7 +1122,7 @@ function upd(){
   const ids=['seg','tonfo','trovato','stato','sint','pdc','tcd','gcs','ling','deficit','quadro','ipo','esa','ter','mvit','mneo','com'];
   let f=0;
   ids.forEach(id=>{const e=$(id);if(e&&e.querySelector('.chip.on,.chip.ron'))f++;});
-  ['paziente','reparto','pa1','pa2','fc','spo2'].forEach(id=>{if(val(id))f++;});
+  ['paziente','pa1','pa2','fc','spo2'].forEach(id=>{if(val(id))f++;});
   if(tcState) f+=2;
   const tot=ids.length+6+2;
   const p=Math.round(f/tot*100);
@@ -1138,35 +1136,140 @@ function upd(){
 // narrative
 function gen(){ upd(); if(cur==='narr') genNarr(); }
 
+// helper: capitalizza la prima lettera
+function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+
+// helper: unisce un array con virgole e "e" prima dell'ultimo elemento
+function joinIt(arr){
+  arr=arr.filter(Boolean);
+  if(!arr.length) return '';
+  if(arr.length===1) return arr[0];
+  return arr.slice(0,-1).join(', ')+' e '+arr[arr.length-1];
+}
+
+// mappa "dinamica caduta" → forma estesa (prima voce) e forma breve (voci successive)
+const DIN_MAP={
+  'bagno / urinare / defecare':{long:'ha tentato di raggiungere i servizi per urinare/defecare',short:'raggiungere i servizi per urinare/defecare'},
+  'tornava dal bagno':{long:'stava tornando dal bagno',short:'tornare dal bagno'},
+  'tentava di alzarsi dal letto':{long:'ha tentato di alzarsi dal letto',short:'alzarsi dal letto'},
+  'tentava di scavalcare le spondine':{long:'ha tentato di scavalcare le spondine',short:'scavalcare le spondine'},
+  'deambulava in stanza / corridoio':{long:'stava deambulando in stanza/corridoio',short:'deambulare in stanza/corridoio'},
+  'si chinava per raccogliere qualcosa':{long:'si è chinato per raccogliere un oggetto',short:'chinarsi per raccogliere un oggetto'},
+  'trasferimento letto–sedia':{long:'stava effettuando un trasferimento letto–sedia',short:'effettuare un trasferimento letto–sedia'},
+  'raggiungere campanello / effetti personali':{long:'ha tentato di raggiungere il campanello o i propri effetti personali',short:'raggiungere il campanello o i propri effetti personali'}
+};
+function dinSentence(list){
+  if(!list.length) return '';
+  const parts=list.map(v=>DIN_MAP[v]||{long:v,short:v});
+  let out='il paziente '+parts[0].long;
+  for(let i=1;i<parts.length;i++) out+=', cercando'+(i>1?' poi':' quindi')+' di '+parts[i].short;
+  return out;
+}
+
+// mappa "comunicazioni" → forma narrativa
+const COM_MAP={
+  'informato il personale infermieristico / OSS':'informo telefonicamente il personale infermieristico/OSS',
+  'informati familiari / caregiver':"comunico l'evento telefonicamente ai familiari",
+  'caso consegnato al collega / team':'consegno il caso al collega/team',
+  'altri professionisti informati':'informo altri professionisti coinvolti'
+};
+function comSentence(list){
+  if(!list.length) return '';
+  const parts=list.map(v=>COM_MAP[v]||v);
+  return cap(parts.join(' e '))+'.';
+}
+
+// fattori di rischio per la giustificazione della TC cranio
+function fattoriRischioTC(){
+  const f=[];
+  const tcdSel=selected('tcd');
+  if(tcdSel==='possibile') f.push('trauma cranico possibile');
+  else if(tcdSel==='non escludibile') f.push('trauma cranico non escludibile');
+
+  const segniEl=document.querySelector('#tc-segni .chip.ron');
+  if(segniEl && segniEl.dataset.v==='si') f.push('segni obiettivi di trauma al capo/viso');
+  const capoDolorabile=document.querySelector('[id="tr-capo-/-collo"] .chip.on[data-v*="dolorabile"]');
+  if(capoDolorabile) f.push("dolorabilità del capo/collo all'esame obiettivo");
+
+  const pdcSel=selected('pdc');
+  if(pdcSel==='riferita') f.push('perdita di coscienza riferita');
+  else if(pdcSel==='non valutabile') f.push('perdita di coscienza non valutabile');
+
+  const gcsSel=$('gcs')?$('gcs').querySelector('.chip.ron'):null;
+  if(gcsSel){
+    const gv=gcsSel.dataset.v||'';
+    if(gv && gv!=='vigile (GCS 15)') f.push('alterazione stato di coscienza ('+gv+')');
+  }
+
+  const defSel=selected('deficit');
+  if(defSel==='presenti') f.push('deficit neurologici focali di nuova insorgenza');
+  else{
+    const lingVal=selected('ling');
+    if(lingVal && lingVal!=='normale') f.push('alterazione del linguaggio ('+lingVal+')');
+  }
+
+  const amnesiaEl=document.querySelector('#tc-amnesia .chip.ron');
+  if(amnesiaEl && amnesiaEl.dataset.v==='si') f.push("amnesia dell'evento");
+  else if(amnesiaEl && amnesiaEl.dataset.v==='non valutabile') f.push("amnesia dell'evento non valutabile");
+
+  const cefaleaEl=document.querySelector('#tc-cefalea .chip.ron');
+  if(cefaleaEl && cefaleaEl.dataset.v==='si') f.push('cefalea intensa post-caduta');
+
+  const modItems=checked('mod');
+  if(modItems.includes('caduta da altezza')) f.push('caduta da altezza');
+  else if(modItems.includes('caduta improvvisa')) f.push('dinamica di caduta improvvisa');
+
+  if(selected('tonfo')==='non noto') f.push('dinamica non testimoniata');
+
+  const anticoagEl=document.querySelector('#tc-anticoag .chip.ron');
+  if(anticoagEl && anticoagEl.dataset.v && anticoagEl.dataset.v!=='no'){
+    const d=anticoagEl.dataset.v;
+    f.push(d==='antiaggregante' ? 'paziente in terapia antiaggregante' : 'paziente in terapia anticoagulante con '+d);
+  }
+  return f;
+}
+
 function genNarr(){
   const frasi=[];
   const pz=val('paziente'),or=val('ora'),och=val('ora-ch');
 
-  // ── Paragrafo 1: attivazione ─────────────────────────
+  // ── Paragrafo 1: attivazione e dinamica ──────────────
   const p1=[];
   let intro='Alle ore '+(or||'--:--');
   if(och&&och!==or) intro+=' (chiamato alle ore '+och+')';
-  intro+=' vengo chiamato per la caduta del paziente '+(pz||'[NOME]')+'.';
-  p1.push(intro);
+  intro+=' vengo chiamato per la caduta del paziente '+(pz||'[NOME]');
 
   const seg=checked('seg'),segA=val('seg-a');
   const segAll=[...seg,segA].filter(Boolean);
-  if(segAll.length) p1.push('La caduta mi viene segnalata da '+segAll.join(' e ')+'.');
 
   const tonfo=selected('tonfo');
-  if(tonfo==='si') p1.push('Riferito tonfo udito.');
-  else if(tonfo==='no') p1.push('Nessun tonfo udito.');
-  else if(tonfo==='non noto') p1.push('Non è noto se sia stato udito un tonfo.');
+  let tonfoClause='';
+  if(tonfo==='si') tonfoClause='ha riferito di aver udito un tonfo';
+  else if(tonfo==='no') tonfoClause='non ha udito alcun tonfo';
+  else if(tonfo==='non noto') tonfoClause='non sa riferire se sia stato udito un tonfo';
 
   const trov=selected('trovato'),trovA=val('trovato-a');
-  if(trov||trovA) p1.push('Trovo il paziente '+(trov||trovA)+'.');
+  const trovVal=trov||trovA;
+  const trovatoClause = trovVal ? 'ha trovato il paziente '+trovVal : '';
+
+  const relClauses=[tonfoClause,trovatoClause].filter(Boolean);
+
+  if(segAll.length){
+    intro+=', segnalata da '+segAll.join(' e ');
+    if(relClauses.length) intro+=', che '+relClauses.join(' e che ');
+    p1.push(intro+'.');
+  } else {
+    p1.push(intro+'.');
+    if(tonfoClause) p1.push(cap(tonfoClause)+'.');
+    if(trovatoClause) p1.push(cap(trovatoClause)+'.');
+  }
 
   const stato=checked('stato');
-  if(stato.length) p1.push('Lo trovo '+stato.join(', ')+'.');
+  if(stato.length) p1.push('Al mio arrivo lo trovo '+stato.join(', ')+'.');
 
   const din=checked('din'),dinA=val('din-a');
   const dinAll=[...din,dinA].filter(Boolean);
-  if(dinAll.length) p1.push('Dalla ricostruzione della dinamica risulta che il paziente '+dinAll.join('; ')+'.');
+  if(dinAll.length) p1.push('Dalla ricostruzione della dinamica risulta che '+dinSentence(dinAll)+'.');
 
   if(p1.length) frasi.push(p1.join(' '));
 
@@ -1174,23 +1277,33 @@ function genNarr(){
   const p2=[];
   const sint=checked('sint'),sintA=val('sint-a');
   const sintAll=[...sint,sintA].filter(Boolean);
-  if(sintAll.length){
-    if(sintAll.length===1&&sintAll[0].includes('nessun'))
+  const pdc=selected('pdc');
+  let pdcHandled=false;
+
+  if(sintAll.length===1&&sintAll[0].includes('nessun')){
+    if(pdc==='negata'){
+      p2.push('Il paziente nega sintomi prima della caduta e la perdita di coscienza.');
+      pdcHandled=true;
+    } else {
       p2.push('Il paziente nega sintomi prima della caduta.');
-    else
-      p2.push('Prima della caduta il paziente riferisce: '+sintAll.join(', ')+'.');
+    }
+  } else if(sintAll.length){
+    p2.push('Prima della caduta il paziente riferisce: '+sintAll.join(', ')+'.');
   }
+
   const mod=checked('mod'),modA=val('mod-a');
   const modAll=[...mod,modA].filter(Boolean);
   if(modAll.length) p2.push('La modalità della caduta è descrivibile come '+modAll.join(', ')+'.');
 
-  const pdc=selected('pdc');
-  if(pdc==='riferita') p2.push('Viene riferita perdita di coscienza.');
-  else if(pdc==='negata') p2.push('La perdita di coscienza viene negata.');
-  else if(pdc==='non valutabile') p2.push('La perdita di coscienza non è valutabile.');
+  if(!pdcHandled){
+    if(pdc==='riferita') p2.push('Viene riferita perdita di coscienza.');
+    else if(pdc==='negata') p2.push('La perdita di coscienza viene negata.');
+    else if(pdc==='non valutabile') p2.push('La perdita di coscienza non è valutabile.');
+  }
 
   const tcd=selected('tcd');
-  if(tcd) p2.push('Il trauma cranico viene riferito come '+tcd+'.');
+  const TCD_MAP={negato:'Il trauma cranico viene escluso su base anamnestica.',possibile:'Trauma cranico riferito come possibile.','non escludibile':'Non escludibile trauma cranico.'};
+  if(tcd && TCD_MAP[tcd]) p2.push(TCD_MAP[tcd]);
 
   const nd=val('note-din');
   if(nd) p2.push(nd);
@@ -1207,11 +1320,11 @@ function genNarr(){
   if(tp) vit.push('TC '+tp+' °C');
   if(fr) vit.push('FR '+fr+' atti/min');
   if(gl) vit.push('glicemia '+gl+' mg/dL');
-  if(vit.length) p3.push('Rilevo i seguenti parametri vitali: '+vit.join(', ')+'.');
+  if(vit.length) p3.push('Rilevati i seguenti parametri vitali: '+vit.join(', ')+'.');
   const ar=val('altri-ril'); if(ar) p3.push(ar+'.');
   if(p3.length) frasi.push(p3.join(' '));
 
-  // ── Paragrafo 4: esame neurologico ───────────────────
+  // ── Paragrafo 4: esame neurologico + obiettività trauma (unico paragrafo) ──
   const p4=[];
   const gcsSel=$('gcs')?$('gcs').querySelector('.chip.ron'):null;
   if(gcsSel){
@@ -1233,42 +1346,75 @@ function genNarr(){
 
   const ep=checked('epil');
   if(ep.length&&!ep.includes('assenti')) p4.push('Presenti segni indiretti di crisi epilettica: '+ep.join(', ')+'.');
-  else if(ep.includes('assenti')) p4.push('Nessun segno indiretto di crisi epilettica.');
+  else if(ep.includes('assenti')) p4.push('Nessun segno indiretto di crisi epilettica (morsus/incontinenza sfinterale).');
 
-  if(p4.length) frasi.push(p4.join(' '));
-
-  // ── Paragrafo 5: obiettività trauma ──────────────────
-  const p5=[];
-  const trP=[];
-  tR.forEach(r=>{
+  // rachide/capo: raggruppo le zone "pulite" (assenza segni + non dolorabile) in un'unica frase
+  const REG_LABEL={
+    'Rachide cervicale':{group:'rachide',adj:'cervicale'},
+    'Rachide dorsale':{group:'rachide',adj:'dorsale'},
+    'Rachide lombare':{group:'rachide',adj:'lombare'},
+    'Capo / collo':{group:'capocollo'}
+  };
+  const regionData=tR.map(r=>{
     const k='tr-'+r.toLowerCase().replace(/\s*\/\s*/g,'-').replace(/\s+/g,'-');
     const ck2=checked(k);
     const nt=val('tr-n-'+k);
-    if(ck2.length||nt) trP.push(r+': '+[...ck2,nt?'('+nt+')':''].filter(Boolean).join(', '));
+    const hasAssenza=ck2.some(v=>v.indexOf('nega trauma')===0);
+    const hasNonDol=ck2.includes(r+': non dolorabile');
+    const hasDol=ck2.includes(r+': dolorabile');
+    return {r,hasAssenza,hasNonDol,hasDol,note:nt,any:ck2.length>0||!!nt};
   });
-  if(trP.length) p5.push('Esame del rachide e del capo: '+trP.join('; ')+'.');
+  const cleanRegions=regionData.filter(d=>d.hasAssenza&&d.hasNonDol&&!d.hasDol&&!d.note);
+  const otherRegions=regionData.filter(d=>d.any&&!(d.hasAssenza&&d.hasNonDol&&!d.hasDol&&!d.note));
+
+  if(cleanRegions.length){
+    const rachideAdj=cleanRegions.filter(d=>REG_LABEL[d.r].group==='rachide').map(d=>REG_LABEL[d.r].adj);
+    const hasCapoCollo=cleanRegions.some(d=>REG_LABEL[d.r].group==='capocollo');
+    const parts=[];
+    if(rachideAdj.length) parts.push('del rachide '+joinIt(rachideAdj));
+    if(hasCapoCollo) parts.push('del capo e del collo');
+    p4.push('Negati trauma e assenza di segni a livello '+parts.join(', e ')+'.');
+  }
+  otherRegions.forEach(d=>{
+    const bits=[];
+    if(d.hasDol) bits.push('dolorabile alla palpazione');
+    else if(d.hasNonDol) bits.push('non dolorabile');
+    if(d.hasAssenza&&!d.hasDol) bits.push('assenza di segni di trauma');
+    if(d.note) bits.push(d.note);
+    if(bits.length) p4.push(d.r+': '+bits.join(', ')+'.');
+  });
 
   const segOb=[];
-  const tor=checked('torace'); if(tor.length) segOb.push('torace '+tor.join(', '));
-  const add=checked('addome'); if(add.length) segOb.push('addome '+add.join(', '));
-  const bac=checked('bacino'); if(bac.length) segOb.push('bacino '+bac.join(', '));
-  const as2=checked('as'); if(as2.length) segOb.push(as2.join(', '));
-  const ai2=checked('ai'); if(ai2.length) segOb.push(ai2.join(', '));
-  if(segOb.length) p5.push('Obiettività somatica: '+segOb.join('; ')+'.');
+  const tor=checked('torace'); if(tor.length) segOb.push(tor.join(', '));
+  const add=checked('addome'); if(add.length) segOb.push(add.join(', '));
+  const bac=checked('bacino'); if(bac.length) segOb.push(bac.join(', '));
+  const as2=checked('as'),ai2=checked('ai');
+  const asOk=as2.length===1&&as2[0]==='arti superiori: motilità conservata';
+  const aiOk=ai2.length===1&&ai2[0]==='arti inferiori: motilità conservata';
+  if(asOk&&aiOk){
+    segOb.push('motilità conservata agli arti superiori e inferiori');
+  } else {
+    if(as2.length) segOb.push(as2.map(v=>v.replace(/^arti superiori:\s*/,'')).join(', ')+' agli arti superiori');
+    if(ai2.length) segOb.push(ai2.map(v=>v.replace(/^arti inferiori:\s*/,'')).join(', ')+' agli arti inferiori');
+  }
+  if(segOb.length) p4.push('Obiettività somatica: '+segOb.join('; ')+'.');
 
   const dm=selected('dmob'),dmA=val('dmob-a');
-  if(dm==='dolore alla mobilizzazione: assente') p5.push('Nessun dolore alla mobilizzazione.');
-  else if(dm==='dolore alla mobilizzazione: presente') p5.push('Dolore alla mobilizzazione'+(dmA?' in sede '+dmA:'')+'.');
+  if(dm==='dolore alla mobilizzazione: assente') p4.push('Nessun dolore alla mobilizzazione.');
+  else if(dm==='dolore alla mobilizzazione: presente') p4.push('Dolore alla mobilizzazione'+(dmA?' in sede '+dmA:'')+'.');
 
   const lc=selected('lcut'),lcA=val('lcut-a');
-  if(lc==='assenza nuove lesioni cutanee') p5.push('Non rilevo nuove lesioni cutanee.');
-  else if(lc==='nuove lesioni cutanee presenti') p5.push('Presenti nuove lesioni cutanee'+(lcA?': '+lcA:'')+'.');
-
   const lp=selected('lpreg'),lpA=val('lpreg-a');
-  if(lp==='assenza lesioni pregresse') p5.push('Nessuna lesione cutanea pregressa nota.');
-  else if(lp==='lesioni pregresse presenti') p5.push('Presenti lesioni/ecchimosi pregresse note'+(lpA?', sede: '+lpA:'')+'.');
+  if(lc==='assenza nuove lesioni cutanee'&&lp==='assenza lesioni pregresse'){
+    p4.push('Non rilevo lesioni cutanee.');
+  } else {
+    if(lc==='assenza nuove lesioni cutanee') p4.push('Non rilevo nuove lesioni cutanee.');
+    else if(lc==='nuove lesioni cutanee presenti') p4.push('Presenti nuove lesioni cutanee'+(lcA?': '+lcA:'')+'.');
+    if(lp==='assenza lesioni pregresse') p4.push('Nessuna lesione cutanea pregressa nota.');
+    else if(lp==='lesioni pregresse presenti') p4.push('Presenti lesioni/ecchimosi pregresse note'+(lpA?', sede: '+lpA:'')+'.');
+  }
 
-  if(p5.length) frasi.push(p5.join(' '));
+  if(p4.length) frasi.push(p4.join(' '));
 
   // ── Paragrafo 6: valutazione e decisioni ─────────────
   const p6=[];
@@ -1278,12 +1424,14 @@ function genNarr(){
 
   const ipo=checked('ipo'),ipoA=val('ipo-a');
   const ipoAll=[...ipo,ipoA].filter(Boolean);
-  if(ipoAll.length) p6.push("L'ipotesi causale più probabile è "+ipoAll.join(', ')+'.');
+  if(ipoAll.length) p6.push("L'ipotesi causale più probabile è di "+ipoAll.join(', ')+'.');
 
   if(tcState==='si'){
-    let s='Richiedo TC cranio urgente';
+    let s='Richiedo TC cranio urgente per esclusione di eventi emorragici';
+    const fatt=fattoriRischioTC();
+    if(fatt.length) s+=', alla luce di '+(fatt.length>1?'molteplici fattori di rischio: ':'un fattore di rischio: ')+fatt.join(', ');
     const m=val('tci-m');
-    if(m) s+=': '+m;
+    if(m) s+='; '+m;
     p6.push(s+'.');
   } else if(tcState==='no'){
     let s='Non ritengo indicata la TC cranio al momento';
@@ -1332,7 +1480,7 @@ function genNarr(){
   // ── Paragrafo 8: comunicazioni ───────────────────────
   const p8=[];
   const com=checked('com');
-  if(com.length) p8.push('Comunico: '+com.join('; ')+'.');
+  if(com.length) p8.push(comSentence(com));
   if(p8.length) frasi.push(p8.join(' '));
 
   // ── Render ───────────────────────────────────────────
@@ -1389,7 +1537,6 @@ function rst(){
 
 function initDate(){
   const n=new Date(),p=n=>String(n).padStart(2,'0');
-  $('data').value=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate());
   $('ora').value=p(n.getHours())+':'+p(n.getMinutes());
 }
 
