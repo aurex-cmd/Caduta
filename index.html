@@ -1147,6 +1147,13 @@ function joinIt(arr){
   return arr.slice(0,-1).join(', ')+' e '+arr[arr.length-1];
 }
 
+// mappa "segnalata da" → forma narrativa (con preposizione corretta)
+const SEG_MAP={
+  'infermiere':'dal personale infermieristico',
+  'OSS':'dal personale OSS'
+};
+function segClause(v){ return SEG_MAP[v] || ('da '+v); }
+
 // mappa "dinamica caduta" → forma estesa (prima voce) e forma breve (voci successive)
 const DIN_MAP={
   'bagno / urinare / defecare':{long:'ha tentato di raggiungere i servizi per urinare/defecare',short:'raggiungere i servizi per urinare/defecare'},
@@ -1255,7 +1262,7 @@ function genNarr(){
   const relClauses=[tonfoClause,trovatoClause].filter(Boolean);
 
   if(segAll.length){
-    intro+=', segnalata da '+segAll.join(' e ');
+    intro+=', segnalata '+joinIt(segAll.map(segClause));
     if(relClauses.length) intro+=', che '+relClauses.join(' e che ');
     p1.push(intro+'.');
   } else {
@@ -1282,10 +1289,10 @@ function genNarr(){
 
   if(sintAll.length===1&&sintAll[0].includes('nessun')){
     if(pdc==='negata'){
-      p2.push('Il paziente nega sintomi prima della caduta e la perdita di coscienza.');
+      p2.push('Nega sintomi prima della caduta o perdita di coscienza.');
       pdcHandled=true;
     } else {
-      p2.push('Il paziente nega sintomi prima della caduta.');
+      p2.push('Nega sintomi prima della caduta.');
     }
   } else if(sintAll.length){
     p2.push('Prima della caduta il paziente riferisce: '+sintAll.join(', ')+'.');
@@ -1302,7 +1309,7 @@ function genNarr(){
   }
 
   const tcd=selected('tcd');
-  const TCD_MAP={negato:'Il trauma cranico viene escluso su base anamnestica.',possibile:'Trauma cranico riferito come possibile.','non escludibile':'Non escludibile trauma cranico.'};
+  const TCD_MAP={negato:'Il trauma cranico viene escluso.',possibile:'Trauma cranico riferito come possibile.','non escludibile':'Non escludibile trauma cranico.'};
   if(tcd && TCD_MAP[tcd]) p2.push(TCD_MAP[tcd]);
 
   const nd=val('note-din');
@@ -1348,13 +1355,22 @@ function genNarr(){
   if(ep.length&&!ep.includes('assenti')) p4.push('Presenti segni indiretti di crisi epilettica: '+ep.join(', ')+'.');
   else if(ep.includes('assenti')) p4.push('Nessun segno indiretto di crisi epilettica (morsus/incontinenza sfinterale).');
 
-  // rachide/capo: raggruppo le zone "pulite" (assenza segni + non dolorabile) in un'unica frase
+  // rachide/capo: raggruppo le zone "pulite" in un'unica frase, distinguendo il tipo di reperto negativo
   const REG_LABEL={
     'Rachide cervicale':{group:'rachide',adj:'cervicale'},
     'Rachide dorsale':{group:'rachide',adj:'dorsale'},
     'Rachide lombare':{group:'rachide',adj:'lombare'},
     'Capo / collo':{group:'capocollo'}
   };
+  function regionGroupPhrase(list,lead,rachidePrefix,capoCollo){
+    if(!list.length) return '';
+    const rachideAdj=list.filter(d=>REG_LABEL[d.r].group==='rachide').map(d=>REG_LABEL[d.r].adj);
+    const hasCapoCollo=list.some(d=>REG_LABEL[d.r].group==='capocollo');
+    const parts=[];
+    if(rachideAdj.length) parts.push(rachidePrefix+joinIt(rachideAdj));
+    if(hasCapoCollo) parts.push(capoCollo);
+    return lead+parts.join(', ')+'.';
+  }
   const regionData=tR.map(r=>{
     const k='tr-'+r.toLowerCase().replace(/\s*\/\s*/g,'-').replace(/\s+/g,'-');
     const ck2=checked(k);
@@ -1364,22 +1380,22 @@ function genNarr(){
     const hasDol=ck2.includes(r+': dolorabile');
     return {r,hasAssenza,hasNonDol,hasDol,note:nt,any:ck2.length>0||!!nt};
   });
-  const cleanRegions=regionData.filter(d=>d.hasAssenza&&d.hasNonDol&&!d.hasDol&&!d.note);
-  const otherRegions=regionData.filter(d=>d.any&&!(d.hasAssenza&&d.hasNonDol&&!d.hasDol&&!d.note));
-
-  if(cleanRegions.length){
-    const rachideAdj=cleanRegions.filter(d=>REG_LABEL[d.r].group==='rachide').map(d=>REG_LABEL[d.r].adj);
-    const hasCapoCollo=cleanRegions.some(d=>REG_LABEL[d.r].group==='capocollo');
-    const parts=[];
-    if(rachideAdj.length) parts.push('del rachide '+joinIt(rachideAdj));
-    if(hasCapoCollo) parts.push('del capo e del collo');
-    p4.push('Negati trauma e assenza di segni a livello '+parts.join(', e ')+'.');
-  }
+  const cleanFull=[],cleanAssenza=[],cleanNonDol=[],otherRegions=[];
+  regionData.forEach(d=>{
+    if(d.hasDol||d.note){ if(d.any) otherRegions.push(d); return; }
+    if(d.hasAssenza&&d.hasNonDol) cleanFull.push(d);
+    else if(d.hasAssenza) cleanAssenza.push(d);
+    else if(d.hasNonDol) cleanNonDol.push(d);
+    else if(d.any) otherRegions.push(d);
+  });
+  if(cleanFull.length) p4.push(regionGroupPhrase(cleanFull,'Negati trauma e assenza di segni a livello ','del rachide ','del capo e del collo'));
+  if(cleanAssenza.length) p4.push(regionGroupPhrase(cleanAssenza,'Assenza di trauma ','al rachide ','al capo e al collo'));
+  if(cleanNonDol.length) p4.push(regionGroupPhrase(cleanNonDol,'Non dolorabili alla palpazione ','il rachide ','il capo e il collo'));
   otherRegions.forEach(d=>{
     const bits=[];
     if(d.hasDol) bits.push('dolorabile alla palpazione');
     else if(d.hasNonDol) bits.push('non dolorabile');
-    if(d.hasAssenza&&!d.hasDol) bits.push('assenza di segni di trauma');
+    if(d.hasAssenza) bits.push('assenza di segni di trauma');
     if(d.note) bits.push(d.note);
     if(bits.length) p4.push(d.r+': '+bits.join(', ')+'.');
   });
