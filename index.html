@@ -109,7 +109,6 @@ html, body { height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; b
 .t4 .sc-head { background: #f0f4fc; }         .t4 .snum { background: var(--ab-bg); color: var(--ab); } .t4 .stitle { color: var(--ab); }
 .t5 .sc-head { background: #f4f2fc; }         .t5 .snum { background: var(--ap-bg); color: var(--ap); } .t5 .stitle { color: var(--ap); }
 .t6 .sc-head { background: #fdf9ec; }         .t6 .snum { background: var(--ay-bg); color: var(--ay); } .t6 .stitle { color: var(--ay); }
-.t7 .sc-head { background: var(--ar-soft); } .t7 .snum { background: var(--ar-bg); color: var(--ar); } .t7 .stitle { color: var(--ar); }
 .t8 .sc-head { background: #f0f8f4; }         .t8 .snum { background: var(--ag-bg); color: var(--ag); } .t8 .stitle { color: var(--ag); }
 .t9 .sc-head { background: #f0f4fc; }         .t9 .snum { background: var(--ab-bg); color: var(--ab); } .t9 .stitle { color: var(--ab); }
 
@@ -951,10 +950,6 @@ function calcTC(){
   const amnesiaEl  = document.querySelector('#tc-amnesia .chip.ron');
   const cefaleaEl  = document.querySelector('#tc-cefalea .chip.ron');
 
-  // Capo/collo da S5 (generato dinamicamente con id tr-capo-/-collo)
-  const capoEl = document.querySelector('#tc-segni') ? null :
-    document.querySelector('[id="tr-capo-/-collo"] .chip.on[data-v*="dolorabile"]');
-
   // Numero campi chiave compilati
   const filled = [pdcSel, tcdSel, gcsSel, anticoagEl, segniEl].filter(Boolean).length;
   if(filled < 2){
@@ -1451,7 +1446,7 @@ function genNarr(){
     p6.push(s+'.');
   } else if(tcState==='no'){
     let s='Non ritengo indicata la TC cranio al momento';
-    const m=val('tcn-m');
+    const m=val('tci-m');
     if(m) s+=': '+m;
     p6.push(s+'. Imposto monitoraggio.');
   }
@@ -1545,8 +1540,6 @@ function rst(){
   tcState=null;
   $('tc-si-btn').classList.remove('tc-si');
   $('tc-no-btn').classList.remove('tc-no');
-  $('tc-si-block').style.display='none';
-  $('tc-no-block').style.display='none';
   $('nout').innerHTML='<span class="nph">Compila la scheda → il testo clinico appare qui automaticamente.</span>';
   initDate(); upd();
 }
